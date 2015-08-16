@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="TestMain.cpp" />
+    <ClCompile Include="Render.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderImple.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="NativeWindow.cpp">
+      <Filter>application</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>application</Filter>
+    </ClCompile>
+    <ClCompile Include="SwapChain.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="DataBuffer.cpp">
+      <Filter>render\state</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>resource</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshImple.cpp">
+      <Filter>resource</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderCore.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="math.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="PipeLine.cpp">
+      <Filter>pipeline</Filter>
+    </ClCompile>
+    <ClCompile Include="PipeLineImple.cpp">
+      <Filter>pipeline</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Render.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderImple.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="NativeWindow.h">
+      <Filter>application</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>application</Filter>
+    </ClInclude>
+    <ClInclude Include="SwapChain.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderState.h">
+      <Filter>render\state</Filter>
+    </ClInclude>
+    <ClInclude Include="DataBuffer.h">
+      <Filter>render\state</Filter>
+    </ClInclude>
+    <ClInclude Include="Lophura.h">
+      <Filter>lophura</Filter>
+    </ClInclude>
+    <ClInclude Include="Format.h">
+      <Filter>lophura</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewPort.h">
+      <Filter>lophura</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshImple.h">
+      <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="vector.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="color.h">
+      <Filter>lophura</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderCore.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="math.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="constant.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="PipeLine.h">
+      <Filter>pipeline</Filter>
+    </ClInclude>
+    <ClInclude Include="PipeLineImple.h">
+      <Filter>pipeline</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="pipeline">
+      <UniqueIdentifier>{b6317fde-4634-4eba-8457-7ebb71b98166}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render">
+      <UniqueIdentifier>{ccf1c131-9c81-44c7-b03e-6eb2289a1621}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="application">
+      <UniqueIdentifier>{88aa3596-b0c9-44b3-95ac-2c4a6cfd5b2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\state">
+      <UniqueIdentifier>{7899e2b9-4853-4218-8b22-16d43a7c4fa7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="lophura">
+      <UniqueIdentifier>{c59e2a52-804d-4195-80f8-615bd40a1f73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resource">
+      <UniqueIdentifier>{ee5525f7-7c16-4e4f-b520-9cd5bb49936e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{5ae7b3e6-8500-49b5-8bb0-6cddbc67e6bc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
