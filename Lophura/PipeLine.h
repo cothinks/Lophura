@@ -11,7 +11,13 @@ public:
 	PipeLine(void);
 	~PipeLine(void);
 public:
-	virtual void Lanche(RenderStatePtr state) = 0;
+	void	Lanche(RenderStatePtr state);
+protected:
+	void	Prepare();
+	void	Draw();
+private:
+	RenderStatePtr	state_;
+	Buffer			transformed_verts_;
 };
 
 LOPHURA_DECLARE_PTR(PipeLine)

@@ -1,19 +1,20 @@
 #include "MeshImple.h"
-#include "math.h"
+
+#include "lophura_base/include/math/vector.h"
+#include "lophura_base/include/math/math.h"
+
 #include <memory>
 
+using namespace lophura_base;
 using namespace std;
 
 LOPHURA_BEGIN
 
 MeshImple::MeshImple(RenderPtr render):Mesh(render),render_(render)
-{
-}
-
+{}
 
 MeshImple::~MeshImple(void)
-{
-}
+{}
 
 void MeshImple::Render()
 {
@@ -23,7 +24,7 @@ void MeshImple::Render()
 	render_->SetVertexBuffer(vertex_buffer_);
 
 	render_->DrawIndex(0,primcount_);
-;}
+}
 
 Lophura::BufferPtr MeshImple::CreateBuffer(size_t size)
 {
@@ -88,7 +89,6 @@ MeshPtr	CreatBox(RenderPtr render)
 			MakeVec4(pverts[21],0.0f, 1.0f, 0.0f, 1.0f);
 			MakeVec4(pverts[22],1.0f, 1.0f, 0.0f, 1.0f);
 			MakeVec4(pverts[23],1.0f, 0.0f, 0.0f, 1.0f);
-
 			//indices
 			pidxs[ 0] = 0;	pidxs[ 1] = 1;	pidxs[ 2] = 2;
 			pidxs[ 3] = 2;	pidxs[ 4] = 3;	pidxs[ 5] = 0;

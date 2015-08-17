@@ -1,21 +1,20 @@
 #include "RenderCore.h"
 #include "PipeLine.h"
-#include "PipeLineImple.h"
 
 LOPHURA_BEGIN
 
-RenderCore::RenderCore(void):pipe_line_(new PipeLineImple)
-{
-}
+RenderCore::RenderCore(void)
+{}
 
 
 RenderCore::~RenderCore(void)
-{
-}
+{}
 
-void RenderCore::Update( RenderStatePtr const& state )
+void RenderCore::ProcessRenderRequest(RenderStatePtr const& state)
 {
 	state_ = state;
+
+	Execute();
 }
 
 void RenderCore::Execute()
@@ -29,6 +28,7 @@ void RenderCore::Execute()
 			Draw();
 		break;
 	default:
+			assert( false && "unknown command !");
 		break;
 	}
 }
@@ -40,7 +40,7 @@ void RenderCore::ClearColor()
 
 void RenderCore::Draw()
 {
-	pipe_line_->Lanche(state_);
+	pipe_line_.Lanche(state_);
 }
 
 LOPHURA_END

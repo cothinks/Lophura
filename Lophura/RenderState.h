@@ -1,11 +1,13 @@
 #pragma once
 
 #include "Lophura.h"
+
+#include "lophura_base/include/math/matrix.h"
+
 #include "DataBuffer.h"
 #include "Format.h"
 #include "ViewPort.h"
 #include "color.h"
-#include "vector.h"
 #include "SwapChain.h"
 
 LOPHURA_BEGIN
@@ -35,16 +37,13 @@ struct RenderState
 	BufferPtr			depth_stencil_target_;
 
 	ViewPort			view_port_;
-	Matrix44			wrold_view_proj_;
+	lophura_base::Matrix44			wrold_view_proj_;
 	PrimitiveTopology	primitive_topology_;
 
 	size_t				start_index_;
 	size_t				primitive_count_;
 
 	COLORRGBA32F		clear_color_;
-
-	//test
-	SwapChainPtr		swap_chain_;
 };
 
 LOPHURA_DECLARE_PTR(RenderState)

@@ -1,6 +1,9 @@
 #include "RenderImple.h"
+#include "SynRender.h"
+#include "AsynRender.h"
 #include <memory>
 
+using namespace lophura_base;
 using namespace std;
 
 LOPHURA_BEGIN
@@ -10,10 +13,8 @@ RenderImple::RenderImple(void)
 	state_.reset( new RenderState() );
 }
 
-
 RenderImple::~RenderImple(void)
-{
-}
+{}
 
 BufferPtr RenderImple::CreateBuffer(size_t size)
 {
@@ -58,7 +59,7 @@ void RenderImple::DrawIndex(size_t start_pos,size_t prim_count)
 	state_->start_index_		= start_pos;
 	state_->primitive_count_	= prim_count;
 
-	PushCommand();
+	CommitCommand();
 }
 
 void RenderImple::ClearColor( COLORRGBA32F const& color )
@@ -66,26 +67,32 @@ void RenderImple::ClearColor( COLORRGBA32F const& color )
 	state_->clear_color_	= color;
 	state_->command_		= CommandId::clear_color;
 
-	PushCommand();
+	CommitCommand();
 }
 
-void RenderImple::PushCommand()
+void RenderImple::CommitCommand()
 {
-	render_core_.Update(state_);
-	render_core_.Execute();
-}
-
-void RenderImple::SetSwapChian( SwapChainPtr swap_chain )
-{
-	state_->swap_chain_ = swap_chain;
+	render_core_.ProcessRenderRequest(state_);
 }
 
 LOPHURA_END
 
 extern "C"
 {
-	void LophuraCreateRender(Lophura::RenderPtr& render)
+	void LophuraCreateRender(Lophura::RenderPtr& render,Lophura::RenderType render_type)
 	{
-		render = make_shared<Lophura::RenderImple>();
+		switch (render_type)
+		{
+		case Lophura::RenderSyn:
+				render = make_shared<Lophura::SynRender>();
+			break;
+		case Lophura::RenderAsyn:
+				render = make_shared<Lophura::AsynRender>();
+			break;
+		default:
+				assert( false && "unknown render type !" );
+			break;
+		}
+		
 	}
 };

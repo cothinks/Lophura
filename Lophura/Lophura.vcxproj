@@ -17,7 +17,7 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -52,7 +52,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../3rd/SDL/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../3rd/SDL/include;../</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -63,6 +63,10 @@
     <PreBuildEvent>
       <Command>copy "$(SolutionDir)3rd\sdl\bin\*"  "$(SolutionDir)$(Configuration)\* </Command>
     </PreBuildEvent>
+    <Lib>
+      <OutputFile>../libs/lophura.lib</OutputFile>
+      <AdditionalDependencies>../libs/lophura_base.lib;../3rd/sdl/lib/sdl.lib</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -82,40 +86,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AsynRender.h" />
     <ClInclude Include="color.h" />
-    <ClInclude Include="constant.h" />
     <ClInclude Include="DataBuffer.h" />
     <ClInclude Include="Format.h" />
     <ClInclude Include="Lophura.h" />
-    <ClInclude Include="math.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="MeshImple.h" />
-    <ClInclude Include="NativeWindow.h" />
     <ClInclude Include="PipeLine.h" />
-    <ClInclude Include="PipeLineImple.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="RenderCore.h" />
     <ClInclude Include="RenderImple.h" />
     <ClInclude Include="RenderState.h" />
     <ClInclude Include="SwapChain.h" />
-    <ClInclude Include="vector.h" />
+    <ClInclude Include="SynRender.h" />
     <ClInclude Include="ViewPort.h" />
-    <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AsynRender.cpp" />
     <ClCompile Include="DataBuffer.cpp" />
-    <ClCompile Include="math.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="MeshImple.cpp" />
-    <ClCompile Include="NativeWindow.cpp" />
     <ClCompile Include="PipeLine.cpp" />
-    <ClCompile Include="PipeLineImple.cpp" />
     <ClCompile Include="Render.cpp" />
     <ClCompile Include="RenderCore.cpp" />
     <ClCompile Include="RenderImple.cpp" />
     <ClCompile Include="SwapChain.cpp" />
-    <ClCompile Include="TestMain.cpp" />
-    <ClCompile Include="Window.cpp" />
+    <ClCompile Include="SynRender.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

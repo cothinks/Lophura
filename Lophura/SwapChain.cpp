@@ -1,11 +1,8 @@
 #include "Lophura.h"
 #include "DataBuffer.h"
 #include "SwapChain.h"
-#include "sdl.h"
 
 LOPHURA_BEGIN
-
-extern SDL_Surface* g_sdl_surface;
 
 SwapChain::SwapChain(void)
 {
@@ -20,7 +17,12 @@ class SwapChainImple : public SwapChain
 {
 public:
 	SwapChainImple(){
-		surface_ = g_sdl_surface;
+		
+	}
+
+	void set_sdl_surface(SDL_Surface* surface)
+	{
+		surface_ = surface;
 
 		color_target_.reset(new Buffer(surface_->pitch*surface_->h));
 	}

@@ -1,13 +1,21 @@
 #pragma once
 
-#include "Lophura.h"
-#include "DataBuffer.h"
-#include "ViewPort.h"
+#include "lophura.h"
+#include "databuffer.h"
+#include "viewport.h"
 #include "color.h"
-#include "vector.h"
-#include "RenderState.h"
+#include "renderstate.h"
+
+#include "lophura_base/include/math/vector.h"
 
 LOPHURA_BEGIN
+
+enum RenderType
+{
+	RenderSyn,
+	RenderAsyn
+};
+
 
 class Render
 {
@@ -22,14 +30,11 @@ public:
 	virtual void		SetRenderTarget(BufferPtr const& color_buffer,BufferPtr const& ds_buffer) = 0;
 	virtual void		ClearColor(COLORRGBA32F const& color) = 0;
 
-	virtual void		SetWVPMatrix(Matrix44 const& wvp) = 0;
+	virtual void		SetWVPMatrix(lophura_base::Matrix44 const& wvp) = 0;
 	virtual void		SetViewPort(ViewPort const& view_port) = 0;
 	virtual void		SetPrimitiveTopology(PrimitiveTopology primitive_topology) = 0;
 
 	virtual void		DrawIndex(size_t start_pos,size_t prim_count) = 0;
-
-	//test
-	virtual void		SetSwapChian(SwapChainPtr swap_chain) = 0;
 };
 
 LOPHURA_DECLARE_PTR(Render)
@@ -38,5 +43,5 @@ LOPHURA_END
 
 extern "C"
 {
-	void LophuraCreateRender(Lophura::RenderPtr& render);
+	void LophuraCreateRender(Lophura::RenderPtr& render,Lophura::RenderType render_type);
 };
