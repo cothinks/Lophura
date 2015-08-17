@@ -1,14 +1,15 @@
 #include "math.h"
-#include "constant.h"
+#include <cmath>
 
-LOPHURA_BEGIN
+namespace lophura_base
+{
 
 void MakeVec4(vec4& vec,float v1,float v2,float v3,float v4)
 {
-		vec.data_[0] = v1;
-		vec.data_[1] = v2;
-		vec.data_[2] = v3;
-		vec.data_[3] = v4;
+	vec.data_[0] = v1;
+	vec.data_[1] = v2;
+	vec.data_[2] = v3;
+	vec.data_[3] = v4;
 }
 
 vec3 CrossProd3(vec3 const& v1,vec3 const& v2)
@@ -98,10 +99,10 @@ void MatrixLookAt(Matrix44& matrix,const vec3& eye,const vec3& target,const vec3
 	vec3 ydir = CrossProd3(zdir,xdir);
 
 	matrix = Matrix44(
-			xdir[0],ydir[0],zdir[0],0.0f,
-			xdir[1],ydir[1],zdir[1],0.0f,
-			xdir[2],ydir[2],zdir[2],0.0f,
-			-DotProd3(xdir,eye),-DotProd3(ydir,eye),-DotProd3(zdir,eye),1.0f
+		xdir[0],ydir[0],zdir[0],0.0f,
+		xdir[1],ydir[1],zdir[1],0.0f,
+		xdir[2],ydir[2],zdir[2],0.0f,
+		-DotProd3(xdir,eye),-DotProd3(ydir,eye),-DotProd3(zdir,eye),1.0f
 		);
 }
 
@@ -140,4 +141,4 @@ Matrix44& MatrixRotY(Matrix44& out, float delta)
 	return out;
 }
 
-LOPHURA_END
+};

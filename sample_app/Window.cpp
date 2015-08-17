@@ -1,7 +1,7 @@
 #include "Window.h"
 #include "NativeWindow.h"
 
-LOPHURA_BEGIN
+namespace sample_app{
 
 Window::Window()
 {
@@ -11,7 +11,7 @@ Window::~Window()
 {
 }
 
-bool Window::OnCreate()
+bool Window::OnCreate(SDL_Surface* surface)
 {
 	return false;
 }
@@ -26,7 +26,7 @@ void Window::OnIdle()
 
 void Window::RunApp()
 {
-	CreateNativeWindow(this);
+	NativeWindow* native_window = CreateNativeWindow(this);
 }
 
-LOPHURA_END
+};

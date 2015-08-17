@@ -1,24 +1,35 @@
-#include "Window.h"
-#include "Render.h"
-#include "ViewPort.h"
-#include "Mesh.h"
-#include "SwapChain.h"
-#include "math.h"
-#include "constant.h"
-#include<windows.h>
+#include <tchar.h>
 
-USING_LOPHURA
+#include "lophura_base/include/math/vector.h"
+#include "lophura_base/include/math/matrix.h"
+#include "lophura_base/include/math/math.h"
 
-//SwapChainPtr	swap_chain_;
+#include "lophura/render.h"
+#include "lophura/mesh.h"
+
+#include "sample_app/window.h"
+
+#include <chrono>
+
+using namespace lophura_base;
+using namespace Lophura;
+using namespace sample_app;
+using namespace std::chrono;
+
+extern SDL_Surface* g_sdl_surface;
+
+int fps_count  = 0;
 
 class TestWindow : public Window
 {
 public:
-	virtual bool	OnCreate()	override
+	virtual bool	OnCreate(SDL_Surface* surface)	override
 	{
 		LophuraCreateSwapchain(swap_chain_);
-		LophuraCreateRender(render_);
-		render_->SetSwapChian(swap_chain_);
+
+		swap_chain_->set_sdl_surface(surface);
+
+		LophuraCreateRender(render_,Lophura::RenderAsyn);
 
 		BufferPtr color_buffer	= swap_chain_->GetBuffer();
 		BufferPtr ds_buffer		= render_->CreateBuffer(800*600*4);
@@ -48,6 +59,22 @@ public:
 	virtual void	OnIdle()	override
 	{
 		
+
+		time_now_ = system_clock::now();
+
+		int s = duration_cast<std::chrono::seconds>(time_now_ - time_last_).count();
+
+		if ( s > 1 )
+		{
+
+			printf("fps:%d\n",fps_count);
+			time_last_ = time_now_;
+			fps_count = 0;
+		}
+
+		fps_count++;
+		//printf("fps:%d\n",fps_count);
+
 		render_->ClearColor(COLORRGBA32F(0.1f,0.1f,0.0f,1.0f));
 		vec3 camera(80.0f,80.0f,80.0f);
 		Matrix44 moudle,world,view,proj,wvp;
@@ -73,10 +100,12 @@ private:
 
 	float		rotate_y_;
 	MeshPtr		box_;
+
+	system_clock::time_point	time_last_;
+	system_clock::time_point	time_now_;
 };
 
-int WINAPI wWinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPWSTR lpCmdLine,int nShowCmd)
-{
+int _tmain( int /*argc*/, TCHAR* /*argv*/[] ){
 	TestWindow window;
 	window.RunApp();
 

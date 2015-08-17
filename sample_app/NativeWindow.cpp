@@ -1,10 +1,13 @@
 #include "NativeWindow.h"
 #include "Window.h"
-#include "sdl.h"
 
-LOPHURA_BEGIN
+#include "3rd/SDL/include/SDL.h"
 
 SDL_Surface* g_sdl_surface = NULL;
+
+namespace sample_app{
+
+
 
 NativeWindow::NativeWindow(IWindowDelegate* delegate)
 {
@@ -38,6 +41,11 @@ public:
 	}
 	~SDLWindow()
 	{}
+
+	void get_surface(SDL_Surface*& surface)
+	{
+		surface = surface_;
+	}
 public:
 	bool CreateWindow();
 	void RunWindow();
@@ -56,7 +64,7 @@ bool SDLWindow::CreateWindow()
 
 	if (surface_){
 		SDL_WM_SetCaption( "Lophura", NULL );
-		window_delegate_->OnCreate();
+		window_delegate_->OnCreate(surface_);
 	}
 
 	return true;
@@ -94,4 +102,4 @@ NativeWindow* CreateNativeWindow(IWindowDelegate* delegate)
 	return new SDLWindow(delegate);
 }
 
-LOPHURA_END
+};
