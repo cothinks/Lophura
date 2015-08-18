@@ -1,0 +1,17 @@
+LOPHURA_CHECK_BUILD_WITH_UNICODE()
+
+INCLUDE_DIRECTORIES(
+	${LOPHURA_HOME_DIR}
+)
+
+set	( SOURCE_FILES
+	src/trangles.cpp
+)
+
+set(EXECUTABLE_OUTPUT_PATH ${LOPHURA_BIN_DIR})
+
+add_executable(trangles ${SOURCE_FILES})
+
+TARGET_LINK_LIBRARIES(trangles sample_app)
+
+SET_TARGET_PROPERTIES( trangles PROPERTIES FOLDER "Samples" )

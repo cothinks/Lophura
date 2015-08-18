@@ -4,90 +4,95 @@
 
 namespace lophura_base
 {
-	template<typename T,int size>
-	struct VectorData
+	template<typename param_type,int size>
+	struct vector_data
 	{
-		T operator [] (int index) const
+		param_type operator [] (int index) const
 		{
 			assert(index < size);
 			return data_[index];
 		}
 
-		T& operator [] (int index)
+		param_type& operator [] (int index)
 		{
 			assert(index < size);
 			return data_[index];
 		}
-
-		void Normalize()
+		
+		void normalize()
 		{
-			T  sum = 0.0f;
-			for (int i = 0;i < size; ++i){
+			param_type  sum = 0.0f;
+			for (int i = 0;i < size; ++i)
+			{
 				sum += data_[i]*data_[i];
 			}
 
 			sum = sqrt(sum);
-			for (int i = 0;i <size; ++i){
+			for (int i = 0;i <size; ++i)
+			{
 				data_[i] /= sum;
 			}
 		}
 
-		T data_[size];
+		param_type data_[size];
 	};
 
-	template<typename T,int size>
-	struct Vector {};
+	template<typename param_type,int size>
+	struct vector {};
 
-	template<typename T>
-	struct Vector<T,2> : public VectorData<T,2>
+	template<typename param_type>
+	struct vector<param_type,2> : public vector_data<param_type,2>
 	{
-		Vector(){}
-		explicit Vector(T const& v1,T const& v2)
+		vector(){}
+		explicit vector(param_type const& v1,param_type const& v2)
 		{
 			data_[0] = v1;
 			data_[1] = v2;
 		}
 
-		T x() const
+		param_type x() const
 		{
 			return data_[0];
 		}
 
-		T y() const
+		param_type y() const
 		{
 			return data_[1];
 		}
 	};
 
-	template<typename T>
-	struct Vector<T,3> :public VectorData<T,3>
+	template<typename param_type>
+	struct vector<param_type,3> :public vector_data<param_type,3>
 	{
-		Vector(){}
-		explicit Vector(T const& v1,T const& v2,T const& v3)
+		vector(){}
+		explicit vector(param_type const& v1,param_type const& v2,param_type const& v3)
 		{
 			data_[0] = v1;
 			data_[1] = v2;
 			data_[2] = v3;
 		}
 
-		T x() const{
+		param_type x() const
+		{
 			return data_[0];
 		}
 
-		T y() const{
+		param_type y() const
+		{
 			return data_[1];
 		}
 
-		T z() const{
+		param_type z() const
+		{
 			return data_[2];
 		}
 	};
 
-	template<typename T>
-	struct Vector<T,4>: public VectorData<T,4>
+	template<typename param_type>
+	struct vector<param_type,4>: public vector_data<param_type,4>
 	{
-		Vector(){}
-		explicit Vector(T const& v1,T const& v2,T const& v3,T const& v4)
+		vector(){}
+		explicit vector(param_type const& v1,param_type const& v2,param_type const& v3,param_type const& v4)
 		{
 			data_[0] = v1;
 			data_[1] = v2;
@@ -95,31 +100,37 @@ namespace lophura_base
 			data_[3] = v4;
 		}
 
-		T x() const{
+		param_type x() const
+		{
 			return data_[0];
 		}
 
-		T y() const{
+		param_type y() const
+		{
 			return data_[1];
 		}
 
-		T z() const{
+		param_type z() const
+		{
 			return data_[2];
 		}
 
-		T w() const{
+		param_type w() const
+		{
 			return data_[3];
 		}
 
-		Vector<T,2> xy(){
-			return Vector<T,2>(x(),y());
+		vector<param_type,2> xy()
+		{
+			return vector<param_type,2>(x(),y());
 		}
 	};
 
-	template<typename T,int size>
-	Vector<T,size> operator - (Vector<T,size> const& lhs,Vector<T,size> const& rhs)
+	template<typename param_type,int size>
+	vector<param_type,size> operator - (vector<param_type,size> const& lhs,vector<param_type,size> const& rhs)
 	{
-		Vector<T,size> ret;
+		vector<param_type,size> ret;
+
 		for (int i = 0;i < size; ++i)
 		{
 			ret.data_[i] = lhs.data_[i] - rhs.data_[i];
@@ -128,10 +139,11 @@ namespace lophura_base
 		return ret;
 	}
 
-	template<typename T,int size>
-	Vector<T,size> operator * (Vector<T,size> const& lhs,T s)
+	template<typename param_type,int size>
+	vector<param_type,size> operator * (vector<param_type,size> const& lhs,param_type s)
 	{
-		Vector<T,size> ret;
+		vector<param_type,size> ret;
+
 		for (int i = 0; i < size; i++)
 		{
 			ret.data_[i] = lhs.data_[i] * s;

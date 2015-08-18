@@ -6,27 +6,26 @@
 
 namespace lophura_base
 {
-	template<class T>
-	void clamp(T& out,T min,T max)
+	template<typename param_type>
+	param_type clamp(param_type val,param_type min_val,param_type max_val)
 	{
-		if( out > max )
-			out = max;
-		if( out < min )
-			out = min;
+		assert(min_val <= max_val);
+
+		if(val < min_val) return min_val;
+		if(val > max_val) return max_val;
+		return val;
 	}
 
-	void	MakeVec4(vec4& vec,float v1,float v2,float v3,float v4);
+//vector transform
+	float		dot_prod3(const vec3& v1, const vec3& v2);
+	float		dot_prod4(const vec4& v1, const vec4& v2);
+	vec3		cross_prod3(vec3 const& v1,vec3 const& v2);
+	vec4&		transform(vec4& out,vec4 const& v,matrix44 const& m);
 
-	vec3	CrossProd3(vec3 const& v1,vec3 const& v2);
-	float	DotProd3(const vec3& v1, const vec3& v2);
-	float	DotProd4(const vec4& v1, const vec4& v2);
-
-	vec4&	Transform(vec4& out,vec4 const& v,Matrix44 const& m);
-
-	Matrix44&	MatrixMul(Matrix44& matrix,Matrix44 const& m1,Matrix44 const& m2);
-	void		MatrixScale(Matrix44& matrix,float sx,float sy,float sz);
-	void		MatrixLookAt(Matrix44& matrix,const vec3& eye,const vec3& target,const vec3& up);
-	void		MatrixPerspectiveFov(Matrix44& matrix,float fov,float aspect,float n,float f);
-
-	Matrix44& MatrixRotY(Matrix44& out, float delta);
+//matrix transform
+	void		matrix_scale(matrix44& matrix,float sx,float sy,float sz);
+	void		matrix_lookat(matrix44& matrix,const vec3& eye,const vec3& target,const vec3& up);
+	void		matrix_perspective_fov(matrix44& matrix,float fov,float aspect,float n,float f);
+	matrix44&	matrix_mul(matrix44& matrix,matrix44 const& m1,matrix44 const& m2);
+	matrix44&	matrix_roty(matrix44& out, float delta);
 };

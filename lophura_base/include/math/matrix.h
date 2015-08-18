@@ -4,6 +4,6 @@
 
 namespace lophura_base
 {
-	typedef Matrix<float,3,3>	Matrix33;
-	typedef Matrix<float,4,4>	Matrix44;
+	typedef matrix<float,3,3>	matrix33;
+	typedef matrix<float,4,4>	matrix44;
 };

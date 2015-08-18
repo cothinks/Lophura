@@ -4,20 +4,20 @@
 
 namespace lophura_base
 {
-	template<typename T,int col_size,int row_size>
-	struct Matrix;
+	template<typename param_type,int col_size,int row_size>
+	struct matrix;
 
-	template<typename T,int col_size,int row_size>
-	struct MatrixData
+	template<typename param_type,int col_size,int row_size>
+	struct matrix_data
 	{
-		Vector<T,col_size> const& GetRow(int i) const
+		vector<param_type,col_size> const& get_row(int i) const
 		{
-			return *reinterpret_cast<Vector<T,col_size> const*>(&data_[i][0]);
+			return *reinterpret_cast<vector<param_type,col_size> const*>(&data_[i][0]);
 		}
 
-		Vector<T,row_size>  GetCol(int i) const
+		vector<param_type,row_size>  get_col(int i) const
 		{
-			Vector<T,row_size> ret;
+			vector<param_type,row_size> ret;
 			for (int row = 0;row < row_size; ++row)
 			{
 				ret.data_[row] = data_[row][i];
@@ -26,21 +26,21 @@ namespace lophura_base
 			return ret;
 		}
 
-		T operator[] (int index) const
+		param_type operator[] (int index) const
 		{
 			assert(index<size);
 			return data_[index];
 		}
 
-		T& operator[] (int index)
+		param_type& operator[] (int index)
 		{
 			assert(index < size);
 			return data_[index];
 		}
 
-		static Matrix<T,col_size,row_size>	Zero()
+		static matrix<param_type,col_size,row_size>	zero()
 		{
-			Matrix<T,col_size,row_size> zero_matrix;
+			matrix<param_type,col_size,row_size> zero_matrix;
 			for (int i = 0;i < row_size; ++i)
 			{
 				for (int j = 0;j < col_size; ++j)
@@ -52,9 +52,9 @@ namespace lophura_base
 			return zero_matrix;
 		}
 
-		static Matrix<T,col_size,row_size>	Identity()
+		static matrix<param_type,col_size,row_size>	identity()
 		{
-			Matrix<T,col_size,row_size>	identity_matrix = Zero();
+			matrix<param_type,col_size,row_size>	identity_matrix = zero();
 			for (int i = 0;i < col_size; ++i)
 			{
 				identity_matrix.data_[i][i] = 1.0f;
@@ -63,21 +63,21 @@ namespace lophura_base
 			return identity_matrix;
 		}
 
-		T	data_[row_size][col_size];
+		param_type	data_[row_size][col_size];
 	};
 
-	template<typename T,int col_size,int row_size>
-	struct Matrix {};
+	template<typename param_type,int col_size,int row_size>
+	struct matrix {};
 
-	template<typename T>
-	struct Matrix<T,4,4> : MatrixData<T,4,4>
+	template<typename param_type>
+	struct matrix<param_type,4,4> : matrix_data<param_type,4,4>
 	{
-		Matrix(){}
-		Matrix(
-			T _11, T _12, T _13, T _14,
-			T _21, T _22, T _23, T _24,
-			T _31, T _32, T _33, T _34,
-			T _41, T _42, T _43, T _44
+		matrix(){}
+		matrix(
+			param_type _11, param_type _12, param_type _13, param_type _14,
+			param_type _21, param_type _22, param_type _23, param_type _24,
+			param_type _31, param_type _32, param_type _33, param_type _34,
+			param_type _41, param_type _42, param_type _43, param_type _44
 			)
 		{
 			data_[0][0] = _11;
