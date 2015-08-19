@@ -1,48 +1,87 @@
 #include "lophura/include/swap_chain.h"
 #include "lophura/include/data_buffer.h"
 
+#include <windows.h>
+
+using namespace std;
+
 BEGIN_NS_LOPHURA()
 
-swap_chain::swap_chain(void)
-{
-}
-
+swap_chain::swap_chain()
+{}
 
 swap_chain::~swap_chain(void)
-{
-}
+{}
 
 class swap_chain_imple : public swap_chain
 {
 public:
-	swap_chain_imple(){
-		
+	swap_chain_imple()
+	{}
+
+	void			create(swap_chain_parameter const& swap_chain_param) override {
+
+		swap_chain_param_ = swap_chain_param;
+
+		uint32_t width	= swap_chain_param_.width;
+		uint32_t height	= swap_chain_param_.height;
+		size_t	byte_count = 4;
+
+		color_target_ = make_shared<data_buffer>(width*height*byte_count);
 	}
 
-	void set_sdl_surface(SDL_Surface* surface)
-	{
-		surface_ = surface;
-
-		color_target_.reset(new data_buffer(surface_->pitch*surface_->h));
-	}
-
-	data_buffer_ptr	GetBuffer() override
-	{
+	data_buffer_ptr	get_buffer() override {
 		return color_target_;
 	}
 
-	void		Present() override
+protected:
+	data_buffer_ptr			color_target_;
+	swap_chain_parameter	swap_chain_param_;
+
+	uint64_t				any_data_;				
+};
+
+
+class win32_swap_chain : public swap_chain_imple
+{
+public:
+	win32_swap_chain()
+	{}
+
+	void	create(swap_chain_parameter const& swap_chain_param) override
 	{
-		uint8_t* src_buffer		= color_target_->raw_data(0);
-		uint8_t* dest_buffer	= reinterpret_cast<uint8_t*>(surface_->pixels);
+		swap_chain_imple::create(swap_chain_param);
+		init_bitmap_info(swap_chain_param);
 
-		memcpy(dest_buffer,src_buffer,color_target_->size());
+		hdc_ = reinterpret_cast<HDC__*>(swap_chain_param.any_data);
+	}
 
-		SDL_Flip(surface_);
+	void	present() override
+	{
+		uint32_t width	= swap_chain_param_.width;
+		uint32_t height	= swap_chain_param_.height;
+
+		::SetDIBitsToDevice(hdc_,0,0,width,height,0,0,0,height,reinterpret_cast<void*>(color_target_->raw_data(0))
+			,&bitmap_info_,DIB_RGB_COLORS);
+	}
+private:
+	void	init_bitmap_info(swap_chain_parameter const& swap_chain_param)
+	{
+		bitmap_info_.bmiHeader.biBitCount = 32;
+		bitmap_info_.bmiHeader.biClrImportant = 0;
+		bitmap_info_.bmiHeader.biClrUsed = 0;
+		bitmap_info_.bmiHeader.biCompression = BI_RGB;  
+		bitmap_info_.bmiHeader.biPlanes = 1;  
+		bitmap_info_.bmiHeader.biSize=sizeof(tagBITMAPINFOHEADER);  
+		bitmap_info_.bmiHeader.biSizeImage = 0;  
+		bitmap_info_.bmiHeader.biXPelsPerMeter = 0;  
+		bitmap_info_.bmiHeader.biYPelsPerMeter = 0;  
+		bitmap_info_.bmiHeader.biWidth = swap_chain_param.width;
+		bitmap_info_.bmiHeader.biHeight = -swap_chain_param.height;
 	}
 protected:
-	data_buffer_ptr		color_target_;
-	SDL_Surface*	surface_;
+	BITMAPINFO	bitmap_info_;
+	HDC			hdc_;
 };
 
 END_NS_LOPHURA()
@@ -50,8 +89,9 @@ END_NS_LOPHURA()
 
 extern "C"
 {
-	void lophura_create_swap_chain( lophura::swap_chain_ptr& swap_chain )
+	void lophura_create_swap_chain( lophura::swap_chain_ptr& swap_chain,lophura::swap_chain_parameter const& swap_chain_param)
 	{
-		swap_chain = lophura::swap_chain_ptr(new lophura::swap_chain_imple());
+		swap_chain	= make_shared<lophura::win32_swap_chain>();
+		swap_chain->create(swap_chain_param);
 	}
 }

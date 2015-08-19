@@ -1,39 +1,46 @@
-#include <tchar.h>
-
 #include "lophura_base/include/math/vector.h"
 #include "lophura_base/include/math/matrix.h"
 #include "lophura_base/include/math/math.h"
 
 #include "lophura/include/lophura_declaration.h"
-#include "lophura/include/Render.h"
-#include "lophura/include/Mesh.h"
+#include "lophura/include/format.h"
+#include "lophura/include/render.h"
+#include "lophura/include/mesh.h"
 #include "lophura/include/swap_chain.h"
 
-#include "samples/sample_app/include/Window.h"
+#include "samples/sample_app/include/window/window.h"
+#include "samples/sample_app/include/window/native_window.h"
 
+#include <tchar.h>
 #include <chrono>
+#include <windows.h>
 
 using namespace lophura_base;
 using namespace lophura;
 using namespace sample_app;
 using namespace std::chrono;
 
-extern SDL_Surface* g_sdl_surface;
-
-int fps_count  = 0;
-
-class TestWindow : public Window
+class test_window : public window
 {
 public:
-	virtual bool	OnCreate(SDL_Surface* surface)	override
-	{
-		lophura_create_swap_chain(swap_chain_);
 
-		swap_chain_->set_sdl_surface(surface);
+	virtual bool	on_create()	override
+	{
+		native_window_->set_title(_T("trangles"));
+
+		uint64_t data;
+		native_window_->get_any_data(data);
+
+		swap_chain_parameter	swap_chain_param;
+		swap_chain_param.width = 800;
+		swap_chain_param.height = 600;
+		swap_chain_param.color_fmt = fmt_r32g32b32a32_unit;
+		swap_chain_param.any_data = uint64_t(::GetDC((HWND)data));
+
+		lophura_create_swap_chain(swap_chain_,swap_chain_param);
 
 		lophura_create_render(render_,lophura::render_syn);
-
-		data_buffer_ptr color_buffer	= swap_chain_->GetBuffer();
+		data_buffer_ptr color_buffer	= swap_chain_->get_buffer();
 		data_buffer_ptr ds_buffer		= render_->create_buffer(800*600*4);
 
 		render_->set_render_target(color_buffer,ds_buffer);
@@ -46,43 +53,39 @@ public:
 		vp.minz = 0;
 		vp.maxz = 1;
 
-		rotate_y_ = 0;
-
 		render_->set_viewport(vp);
-
 		box_ = creat_box(render_);
+
+		rotate_y_ = 0;
+		fps_count = 0;
 
 		return true;
 	}
-	virtual void	OnDraw()	override
+
+	virtual void	on_draw()	override
 	{
-		swap_chain_->Present();
+		swap_chain_->present();
 	}
-	virtual void	OnIdle()	override
+
+	virtual void	on_idle()	override
 	{
-		
-
 		time_now_ = system_clock::now();
-
 		int s = duration_cast<std::chrono::seconds>(time_now_ - time_last_).count();
-
-		if ( s > 1 )
-		{
-
+		if ( s > 1 ){
 			printf("fps:%d\n",fps_count);
 			time_last_ = time_now_;
 			fps_count = 0;
 		}
 
 		fps_count++;
-		//printf("fps:%d\n",fps_count);
+		rotate_y_ += 0.3f;
 
 		render_->clear_color(color_rgba_32f(0.1f,0.1f,0.0f,1.0f));
+
 		vec3 camera(80.0f,80.0f,80.0f);
 		matrix44 moudle,world,view,proj,wvp;
 
 		matrix_roty(moudle,rotate_y_);
-		rotate_y_ += 0.3f;
 		world  = matrix44::identity();
 
 		matrix_scale(world,30.0f,30.0f,30.0f);
@@ -94,22 +97,25 @@ public:
 		render_->set_wvp_matrix(wvp);
 
 		box_->render();
-		swap_chain_->Present();
+		swap_chain_->present();
 	}
 private:
-	render_ptr		render_;
-	swap_chain_ptr	swap_chain_;
+	render_ptr					render_;
+	swap_chain_ptr				swap_chain_;
 
-	float		rotate_y_;
-	mesh_ptr		box_;
+	float						rotate_y_;
+	mesh_ptr					box_;
 
+	int							fps_count;
 	system_clock::time_point	time_last_;
 	system_clock::time_point	time_now_;
 };
 
 int _tmain( int /*argc*/, TCHAR* /*argv*/[] ){
-	TestWindow window;
-	window.RunApp();
+	test_window window;
+	window.create_window(800,600);
+
+	window.run_app();
 
 	return 0;
 }

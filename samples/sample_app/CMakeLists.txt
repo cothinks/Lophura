@@ -5,8 +5,8 @@ INCLUDE_DIRECTORIES(
 )
 
 set	( WINDOW_HEADERS
-	include/window.h
-	include/native_window.h
+	include/window/window.h
+	include/window/native_window.h
 )
 
 SOURCE_GROUP( "Header Files\\window" FILES
@@ -18,8 +18,9 @@ set	( HEADER_FILES
 )
 
 set	( WINDOW_SOURCES
-	src/window.cpp
-	src/native_window.cpp
+	src/window/window.cpp
+	src/window/native_window.cpp
+	src/window/ms_window.cpp
 )
 
 SOURCE_GROUP( "Source Files\\window" FILES

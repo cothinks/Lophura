@@ -28,4 +28,5 @@ namespace lophura_base
 	void		matrix_perspective_fov(matrix44& matrix,float fov,float aspect,float n,float f);
 	matrix44&	matrix_mul(matrix44& matrix,matrix44 const& m1,matrix44 const& m2);
 	matrix44&	matrix_roty(matrix44& out, float delta);
+
 };

@@ -105,6 +105,6 @@ ADD_LIBRARY( lophura STATIC
 	${SOURCE_FILES}
 )
 
-TARGET_LINK_LIBRARIES(lophura lophura_base ${LOPHURA_SDL_LIB_DIR}/sdl.lib)
+TARGET_LINK_LIBRARIES(lophura lophura_base)
 
 SET_TARGET_PROPERTIES( lophura PROPERTIES FOLDER "Render" )

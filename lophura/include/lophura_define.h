@@ -1,8 +1,19 @@
 #pragma once
 
+#include "lophura_base/include/platform/typedefs.h"
 #include "lophura/include/lophura_forward.h"
+#include "lophura/include/format.h"
 
 BEGIN_NS_LOPHURA()
+
+struct swap_chain_parameter
+{
+	uint32_t	width;
+	uint32_t	height;
+
+	color_format	color_fmt;
+	uint64_t		any_data;
+};
 
 enum render_type
 {
