@@ -7,6 +7,8 @@
 #include "lophura/include/format.h"
 #include "lophura/include/viewport.h"
 #include "lophura/include/colors.h"
+#include "lophura/include/render_state/input_layout.h"
+#include "lophura/include/render_state/input_assembly_state.h"
 
 #include "lophura_base/include/utility/shared_declaration.h"
 
@@ -22,11 +24,14 @@ struct render_state
 	index_format			index_format_;
 	data_buffer_ptr			vertex_buffer_;
 
+	input_layout_ptr		input_layout_;
+	input_assembly_state	input_assembly_slots_;
+
 	data_buffer_ptr			color_target_;
 	data_buffer_ptr			depth_stencil_target_;
 
 	viewport				view_port_;
-	lophura_base::matrix44			wrold_view_proj_;
+	lophura_base::matrix44	wrold_view_proj_;
 	primitive_topology		primitive_topology_;
 
 	size_t					start_index_;

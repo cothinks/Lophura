@@ -16,6 +16,7 @@ BEGIN_NS_LOPHURA()
 
 LOPHURA_DECLARE_STRUCT_SHARED_PTR(render_state);
 LOPHURA_DECLARE_CLASS_SHARED_PTR(data_buffer);
+LOPHURA_DECLARE_CLASS_SHARED_PTR(input_layout);
 
 class render
 {
@@ -25,7 +26,11 @@ public:
 public:
 	virtual data_buffer_ptr	create_buffer(size_t size) = 0;
 
-	virtual	void		set_vertex_buffer(data_buffer_ptr const& buffer)	= 0;
+	virtual void		set_input_layout( input_layout_ptr const& layout) = 0;
+	virtual void		set_vertex_buffer( 
+		size_t start_slot,
+		data_buffer_ptr const* buffer, size_t buffer_count,
+		size_t const* strides, size_t const* offsets ) = 0;
 	virtual void		set_index_buffer(data_buffer_ptr const& buffer,index_format index_fmt)	= 0;
 	virtual void		set_render_target(data_buffer_ptr const& color_buffer,data_buffer_ptr const& ds_buffer) = 0;
 	virtual void		set_wvp_matrix(lophura_base::matrix44 const& wvp) = 0;

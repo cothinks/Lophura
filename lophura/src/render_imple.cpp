@@ -22,15 +22,20 @@ data_buffer_ptr render_imple::create_buffer(size_t size)
 	return make_shared<data_buffer>(size);
 }
 
+void render_imple::set_input_layout( input_layout_ptr const& layout )
+{
+	state_->input_layout_ = layout;
+}
+
+void render_imple::set_vertex_buffer( size_t start_slot, data_buffer_ptr const* buffer, size_t buffer_count, size_t const* strides, size_t const* offsets )
+{
+	state_->input_assembly_slots_.update(start_slot, buffer, buffer_count, strides,offsets);
+}
+
 void render_imple::set_index_buffer(data_buffer_ptr const& buffer,index_format index_fmt)
 {
 	state_->index_buffer_ = buffer;
 	state_->index_format_ = index_fmt;
-}
-
-void render_imple::set_vertex_buffer(data_buffer_ptr const& buffer)
-{
-	state_->vertex_buffer_ = buffer;
 }
 
 void render_imple::set_render_target( data_buffer_ptr const& color_buffer,data_buffer_ptr const& ds_buffer )

@@ -4,7 +4,7 @@
 #include "lophura_base/include/math/math.h"
 
 #include "lophura/include/viewport.h"
-#include "lophura/include/render_state.h"
+#include "lophura/include/render_state/render_state.h"
 
 using namespace lophura_base;
 
