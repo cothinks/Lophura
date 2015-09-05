@@ -3,6 +3,10 @@
 
 namespace sample_app{
 
+window_delegate::~window_delegate()
+{
+}
+
 window::window()
 {
 }

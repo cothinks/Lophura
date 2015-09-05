@@ -9,6 +9,8 @@ namespace sample_app
 	class window_delegate
 	{
 	public:
+		virtual ~window_delegate();
+	public:
 		virtual bool	on_create()	= 0;
 		virtual void	on_draw()	= 0;
 		virtual void	on_idle()	= 0;

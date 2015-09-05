@@ -21,12 +21,22 @@ void mesh_imple::render()
 {
 	assert(render_.get());
 
-	//input_layout_ptr input_layout_ = input_layout::create();
+	input_layout_ptr input_layout_ = input_layout::create(&( descs_[0] ), descs_.size());
 
-	//render_->set_vertex_buffer(,);
-	render_->set_index_buffer(index_buffer_,ifm_16);
-	//render_->set_vertex_buffer(vertex_buffer_);
-	render_->draw_index(0,primcount_);
+	if ( !input_layout_){
+		return;
+	}
+	
+	for ( size_t i_buffer = 0; i_buffer < vertex_buffers_.size(); ++i_buffer){
+		render_->set_vertex_buffer(
+			slots_[i_buffer], &vertex_buffers_[i_buffer], 1,
+			&strides_[i_buffer], &offsets_[i_buffer]);
+	}
+	render_->set_index_buffer( index_buffer_, index_fmt_);
+	render_->set_input_layout( input_layout_);
+	render_->set_primitive_topology(primitive_topology::primitive_triangle_list);
+
+	render_->draw_index( 0, primcount_);
 }
 
 data_buffer_ptr mesh_imple::create_buffer(size_t size)
@@ -68,8 +78,8 @@ mesh_ptr	creat_box(render_ptr render)
 	mesh_imple* mesh	= new mesh_imple(render);
 	
 	size_t const geometry_slot	= 0;
-	size_t const normal_slot	= 0;
-	size_t const uv_slot		= 0;
+	size_t const normal_slot	= 1;
+	size_t const uv_slot		= 2;
 
 	{
 		data_buffer_ptr indices	= mesh->create_buffer(sizeof(uint16_t)*36);
