@@ -3,6 +3,7 @@
 #include "lophura/include/lophura_forward.h"
 #include "lophura/include/pipeline.h"
 #include "lophura_base/include/utility/shared_declaration.h"
+#include "lophura/include/render_stages.h"
 
 BEGIN_NS_LOPHURA()
 
@@ -22,6 +23,7 @@ protected:
 	void draw();
 protected:
 	render_state_ptr	state_;
+	render_stages		stages_;
 	pipeline			pipe_line_;
 };
 

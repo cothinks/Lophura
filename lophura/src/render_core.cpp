@@ -4,11 +4,17 @@
 BEGIN_NS_LOPHURA()
 
 render_core::render_core(void)
-{}
+{
+	stages_.assembler_		.reset( new stream_assembler());
+	stages_.data_address_	.reset( new data_addressing());
+
+	stages_.data_address_->initialize(&stages_);
+	pipe_line_.initialize( &stages_);
+}
 
 
 render_core::~render_core(void)
-{}
+{} 
 
 void render_core::process_render_request(render_state_ptr const& state)
 {
@@ -39,6 +45,9 @@ void render_core::clear_color()
 
 void render_core::draw()
 {
+	stages_.data_address_->update(state_.get());
+	stages_.assembler_->update(state_.get());
+
 	pipe_line_.lanche(state_);
 }
 

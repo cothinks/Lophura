@@ -15,6 +15,7 @@
 BEGIN_NS_LOPHURA()
 
 LOPHURA_DECLARE_CLASS_SHARED_PTR(data_buffer);
+LOPHURA_DECLARE_CLASS_SHARED_PTR(cpp_vertex_shader);
 
 struct render_state
 {
@@ -22,7 +23,7 @@ struct render_state
 
 	data_buffer_ptr			index_buffer_;
 	index_format			index_format_;
-	data_buffer_ptr			vertex_buffer_;
+	//data_buffer_ptr			vertex_buffer_;
 
 	input_layout_ptr		input_layout_;
 	input_assembly_state	input_assembly_slots_;
@@ -33,6 +34,8 @@ struct render_state
 	viewport				view_port_;
 	lophura_base::matrix44	wrold_view_proj_;
 	primitive_topology		primitive_topology_;
+
+	cpp_vertex_shader_ptr	cpp_vs_;
 
 	size_t					start_index_;
 	size_t					primitive_count_;

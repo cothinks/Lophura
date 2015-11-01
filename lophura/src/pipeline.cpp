@@ -12,6 +12,7 @@ BEGIN_NS_LOPHURA()
 
 void viewport_transform(vec4& position, const viewport& vp)
 {
+
 	float invw = ( position[3] == 0.0f) ? 1.0f : 1.0f / position[3];
 	vec4 pos = position * invw;
 
@@ -96,7 +97,7 @@ public:
 	}
 };
 
-pipeline::pipeline(void):transformed_verts_(800*600)
+pipeline::pipeline(void)
 {}
 
 
@@ -114,47 +115,37 @@ void pipeline::lanche( render_state_ptr state )
 
 void pipeline::prepare()
 {
-	data_buffer_ptr vertex_buffer = state_->vertex_buffer_;
-	matrix44  wvp			= state_->wrold_view_proj_;
-
-	transformed_verts_	= *vertex_buffer;
-
-	vec4*	vertx		= reinterpret_cast<vec4*>(transformed_verts_.raw_data(0));
-	size_t	vert_count	= vertex_buffer->size() / sizeof(vec4);
-
-	for (size_t i = 0;i < vert_count; ++i)
-	{
-		transform(vertx[i],vertx[i],wvp);
-	}
-
-	viewport const& vp = state_->view_port_;
-	for (size_t i = 0;i < vert_count; ++i)
-	{
-		viewport_transform(vertx[i],vp);
-	}
+	
 }
 
 void pipeline::draw()
 {
 	data_buffer_ptr color_target	= state_->color_target_;
-	data_buffer_ptr vertex_buffer = state_->vertex_buffer_;
-	data_buffer_ptr index_buffer  = state_->index_buffer_;
 
-	vec4*	vertx		= reinterpret_cast<vec4*>(transformed_verts_.raw_data(0));
-	size_t	vert_count	=  vertex_buffer->size() / sizeof(vec4);
+	size_t prim_count  = state_->primitive_count_;
+	viewport const& vp = state_->view_port_;
 
-	assert(ifm_16 == state_->index_format_);
-
-	uint16_t* idis = reinterpret_cast<uint16_t*>(state_->index_buffer_->raw_data(0));
-	size_t	index_count	= state_->index_buffer_->size() / sizeof(uint16_t);
-
-	color_rgba_32f color(0.0f,1.0f,0.0f,1.0f);
-
-	for (size_t i = 0;i < index_count; i += 3)
+	for (size_t prim_id = 0; prim_id < prim_count; ++prim_id)
 	{
-		vec4* trangles[] = { &vertx[idis[i]],&vertx[idis[i+1]],&vertx[idis[i+2]] };
+		vs_output vo[3];
+		addressing_->fetch3( vo, prim_id);
+
+		color_rgba_32f color(0.0f,1.0f,0.0f,1.0f);
+
+		vec4* trangles[] = { &(vo[0].position()), &(vo[1].position()), &(vo[2].position())};
+
+		for (auto const& pos : trangles)
+		{
+			viewport_transform(*pos,vp);
+		}
+
 		raster::draw_trangle(color_target,trangles,color);
 	}
+}
+
+void pipeline::initialize( render_stages const* stages )
+{
+	addressing_ = stages->data_address_;
 }
 
 END_NS_LOPHURA()

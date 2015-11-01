@@ -18,7 +18,7 @@ namespace sample_app
 		{}
 	public:
 		bool	create_window(uint32_t width,uint32_t height) override;
-		void	set_title(const kstring title) override;
+		void	set_title(const lophura_base::kstring title) override;
 		void	run_window() override;
 
 		bool	get_any_data(uint64_t& data) override;

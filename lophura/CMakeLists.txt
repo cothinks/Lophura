@@ -16,10 +16,15 @@ set	( COMMON_HEADERS
 	include/lophura_declaration.h
 	include/lophura_define.h
 	include/lophura_forward.h
+	include/voidptr.h
 )
 
 set	( PIPELINE_HEADERS
 	include/pipeline.h
+	include/index_fetcher.h
+	include/data_addressing.h
+	include/render_stages.h
+	include/stream_assembler.h
 )
 
 set ( RENDER_STATE_HEADERS
@@ -36,6 +41,16 @@ set	( RENDER_HEADERS
 	include/render_core.h
 	include/swap_chain.h
 	include/data_buffer.h
+)
+
+set ( RESOURCE_HEADERS
+	include/mesh.h
+	include/mesh_imple.h
+)
+
+set ( SHADER_HEADERS
+	include/shader.h
+	include/shader_regs.h
 )
 
 SOURCE_GROUP( "Header Files\\common" FILES
@@ -58,16 +73,28 @@ SOURCE_GROUP( "Header Files\\resource" FILES
 	${RESOURCE_HEADERS}
 )
 
+SOURCE_GROUP( "Header Files\\shader" FILES
+	${SHADER_HEADERS}
+)
+
 set	( HEADER_FILES
 	${COMMON_HEADERS}
 	${PIPELINE_HEADERS}
 	${RENDER_HEADERS}
 	${RENDER_STATE_HEADERS}
 	${RESOURCE_HEADERS}
+	${SHADER_HEADERS}
+)
+
+set ( COMMON_SOURCES
+	src/voidptr.cpp
 )
 
 set ( PIPELINE_SOURCES
 	src/pipeline.cpp
+	src/index_fetcher.cpp
+	src/data_addressing.cpp
+	src/stream_assembler.cpp
 )
 
 set ( RENDER_STATE_SOURCES 
@@ -89,8 +116,16 @@ set	( RESOURCE_SOURCES
 	src/mesh_imple.cpp
 )
 
+set	( SHADER_SOURCES
+	src/shader.cpp
+)
+
 SOURCE_GROUP( "Header Files" )
 SOURCE_GROUP( "Source Files" )
+
+SOURCE_GROUP( "Source Files\\common" FILES
+	${COMMON_SOURCES}
+)
 
 SOURCE_GROUP( "Source Files\\pipeline" FILES
 	${PIPELINE_SOURCES}
@@ -104,12 +139,18 @@ SOURCE_GROUP( "Source Files\\render\\render_state" FILES
 SOURCE_GROUP( "Source Files\\resource" FILES
 	${RESOURCE_SOURCES}
 )
+SOURCE_GROUP( "Source Files\\shader" FILES
+	${SHADER_SOURCES}
+)
+
 
 set (SOURCE_FILES
+	${COMMON_SOURCES}
 	${PIPELINE_SOURCES}
 	${RENDER_SOURCES}
 	${RENDER_STATE_SOURCES}
 	${RESOURCE_SOURCES}
+	${SHADER_SOURCES}
 )
 
 set(LIBRARY_OUTPUT_PATH ${LOPHURA_LIB_DIR})

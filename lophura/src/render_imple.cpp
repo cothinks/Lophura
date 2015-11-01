@@ -22,6 +22,11 @@ data_buffer_ptr render_imple::create_buffer(size_t size)
 	return make_shared<data_buffer>(size);
 }
 
+void render_imple::set_cpp_vertex_shader( cpp_vertex_shader_ptr const& rhs )
+{
+	state_->cpp_vs_ = rhs;
+}
+
 void render_imple::set_input_layout( input_layout_ptr const& layout )
 {
 	state_->input_layout_ = layout;
@@ -80,6 +85,8 @@ void render_imple::commit_command()
 {
 	render_core_.process_render_request(state_);
 }
+
+
 
 END_NS_LOPHURA()
 

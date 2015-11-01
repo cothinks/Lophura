@@ -124,6 +124,11 @@ namespace lophura_base
 		{
 			return vector<param_type,2>(x(),y());
 		}
+
+		static vector<param_type,4> zero()
+		{
+			return vector<param_type,4>(0,0,0,0);
+		}
 	};
 
 	template<typename param_type,int size>

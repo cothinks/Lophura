@@ -17,6 +17,7 @@ public:
 public:
 	virtual data_buffer_ptr	create_buffer(size_t size) override;
 
+	virtual void		set_cpp_vertex_shader(cpp_vertex_shader_ptr const& rhs) override;
 	virtual void		set_input_layout( input_layout_ptr const& layout ) override;
 	virtual void		set_vertex_buffer( 
 		size_t start_slot, 

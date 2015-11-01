@@ -7,6 +7,7 @@
 #include "lophura/include/render.h"
 #include "lophura/include/mesh.h"
 #include "lophura/include/swap_chain.h"
+#include "lophura/include/shader.h"
 
 #include "samples/sample_app/include/window/window.h"
 #include "samples/sample_app/include/window/native_window.h"
@@ -19,6 +20,53 @@ using namespace lophura_base;
 using namespace lophura;
 using namespace sample_app;
 using namespace std::chrono;
+
+class vs : public cpp_vertex_shader
+{
+	matrix44 wvp;
+public:
+	vs():wvp(matrix44::identity()){
+		declare_constant(_T("WorldViewProjMat"), wvp);
+
+		bind_semantic( "POSITION", 0, 0 );
+	}
+
+	vs(const matrix44& wvp):wvp(wvp){}
+	void shader_prog(const vs_input& in, vs_output& out)
+	{
+		vec4 pos = in.attribute(0);
+		transform(out.position(), pos, wvp);
+	}
+
+	uint32_t num_output_attributes() const
+	{
+		return 2;
+	}
+
+	uint32_t output_attribute_modifiers(uint32_t index) const
+	{
+		switch (index)
+		{
+		case 0:
+			return vs_output::am_linear;
+
+		case 1:
+			return vs_output::am_linear;
+
+		case 2:
+			return vs_output::am_linear;
+
+		default:
+			return vs_output::am_linear;
+		}
+	}
+
+	virtual cpp_shader_ptr clone()
+	{
+		typedef std::remove_pointer<decltype(this)>::type this_type;
+		return cpp_shader_ptr(new this_type(*this));
+	}
+};
 
 class test_window : public window
 {
@@ -59,6 +107,8 @@ public:
 		rotate_y_ = 0;
 		fps_count = 0;
 
+		pvs_.reset( new vs());
+
 		return true;
 	}
 
@@ -80,6 +130,8 @@ public:
 		fps_count++;
 		rotate_y_ += 0.3f;
 
+		render_->set_cpp_vertex_shader(pvs_);
+
 		render_->clear_color(color_rgba_32f(0.1f,0.1f,0.0f,1.0f));
 
 		vec3 camera(80.0f,80.0f,80.0f);
@@ -94,7 +146,7 @@ public:
 		matrix_perspective_fov(proj,static_cast<float>(HALF_PI),1.0f,0.1f,1000.0f);
 
 		matrix_mul(wvp,world,matrix_mul(wvp,view,proj));
-		render_->set_wvp_matrix(wvp);
+		pvs_->set_constant(_T("WorldViewProjMat"),&wvp);
 
 		box_->render();
 		swap_chain_->present();
@@ -105,6 +157,8 @@ private:
 
 	float						rotate_y_;
 	mesh_ptr					box_;
+
+	cpp_vertex_shader_ptr		pvs_;
 
 	int							fps_count;
 	system_clock::time_point	time_last_;

@@ -5,6 +5,8 @@
 #include <string>
 #include <assert.h>
 
+using namespace lophura_base;
+
 namespace sample_app
 {
 	const	TCHAR*		ms_window::class_name	= _T("ms_window");

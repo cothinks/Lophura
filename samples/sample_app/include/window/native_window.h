@@ -16,7 +16,7 @@ namespace sample_app
 	public:
 		virtual bool	create_window(uint32_t windth,uint32_t height) = 0;
 		virtual void	run_window() = 0;
-		virtual void	set_title(const kstring title) = 0;
+		virtual void	set_title(const lophura_base::kstring title) = 0;
 
 		virtual bool	get_any_data(uint64_t& data) = 0;
 	protected:

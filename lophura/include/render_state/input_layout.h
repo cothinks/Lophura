@@ -4,6 +4,7 @@
 #include "lophura_base/include/platform/typedefs.h"
 #include "lophura_base/include/utility/shared_declaration.h"
 #include "lophura/include/format.h"
+#include "lophura/include/shader.h"
 
 #include <vector>
 
@@ -42,6 +43,9 @@ class input_layout
 {
 public:
 	static input_layout_ptr create( input_element_desc const* decs, size_t desc_count);
+
+	virtual input_element_desc const* find_desc( size_t slot ) const;
+	virtual input_element_desc const* find_desc( semantic_value const& ) const;
 private:
 	std::vector<input_element_desc> layout_desc_;
 };
