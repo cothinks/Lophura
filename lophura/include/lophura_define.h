@@ -34,4 +34,21 @@ enum class command_id
 	clear_color
 };
 
+enum cull_mode
+{
+	cull_none,
+	cull_front,
+	cull_back,
+
+	cull_mode_count,
+};
+
+enum fill_mode
+{
+	fill_wireframe,
+	fill_solid,
+
+	fill_mode_count
+};
+
 END_NS_LOPHURA()

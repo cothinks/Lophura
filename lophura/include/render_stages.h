@@ -9,11 +9,13 @@ BEGIN_NS_LOPHURA()
 
 LOPHURA_DECLARE_CLASS_SHARED_PTR(stream_assembler);
 LOPHURA_DECLARE_CLASS_SHARED_PTR(data_addressing);
+LOPHURA_DECLARE_CLASS_SHARED_PTR(rasterizer);
 
 struct render_stages
 {
 	stream_assembler_ptr assembler_;
 	data_addressing_ptr	 data_address_;
+	rasterizer_ptr		 ras_;
 };
 
 END_NS_LOPHURA()

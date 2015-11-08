@@ -25,7 +25,7 @@ public:
 		size_t const* strides, size_t const* offsets ) override;
 	virtual void		set_index_buffer(data_buffer_ptr const& buffer,index_format index_fmt) override;
 	virtual void		set_render_target(data_buffer_ptr const& color_buffer,data_buffer_ptr const& ds_buffer) override;
-	virtual void		set_wvp_matrix(lophura_base::matrix44 const& wvp) override;
+	//virtual void		set_wvp_matrix(lophura_base::matrix44 const& wvp) override;
 	virtual void		set_viewport(viewport const& view_port) override;
 	virtual void		set_primitive_topology(primitive_topology pt) override;
 

@@ -34,7 +34,7 @@ public:
 		size_t const* strides, size_t const* offsets ) = 0;
 	virtual void		set_index_buffer(data_buffer_ptr const& buffer,index_format index_fmt)	= 0;
 	virtual void		set_render_target(data_buffer_ptr const& color_buffer,data_buffer_ptr const& ds_buffer) = 0;
-	virtual void		set_wvp_matrix(lophura_base::matrix44 const& wvp) = 0;
+	//virtual void		set_wvp_matrix(lophura_base::matrix44 const& wvp) = 0;
 	virtual void		set_viewport(viewport const& view_port) = 0;
 	virtual void		set_primitive_topology(primitive_topology pt) = 0;
 

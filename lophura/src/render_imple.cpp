@@ -49,11 +49,6 @@ void render_imple::set_render_target( data_buffer_ptr const& color_buffer,data_b
 	state_->depth_stencil_target_	= ds_buffer;
 }
 
-void render_imple::set_wvp_matrix(matrix44 const& wvp)
-{
-	state_->wrold_view_proj_ = wvp;
-}
-
 void render_imple::set_viewport(viewport const& view_port)
 {
 	state_->view_port_ = view_port;

@@ -25,6 +25,8 @@ set	( PIPELINE_HEADERS
 	include/data_addressing.h
 	include/render_stages.h
 	include/stream_assembler.h
+	include/rasterizer.h
+	include/raster_state.h
 )
 
 set ( RENDER_STATE_HEADERS
@@ -95,6 +97,8 @@ set ( PIPELINE_SOURCES
 	src/index_fetcher.cpp
 	src/data_addressing.cpp
 	src/stream_assembler.cpp
+	src/rasterizer.cpp
+	src/raster_state.cpp
 )
 
 set ( RENDER_STATE_SOURCES 
