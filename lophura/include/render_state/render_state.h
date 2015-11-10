@@ -33,7 +33,6 @@ struct render_state
 
 	viewport				view_port_;
 	raster_state_ptr		ras_state_;
-	//lophura_base::matrix44	wrold_view_proj_;
 	primitive_topology		primitive_topology_;
 
 	cpp_vertex_shader_ptr	cpp_vs_;

@@ -14,7 +14,8 @@ struct raster_desc
 class raster_state
 {
 public:
-	raster_state( raster_desc const& desc);
+	raster_state( raster_desc const& desc):desc_(desc)
+	{}
 
 	inline raster_desc const& get_desc() const
 	{

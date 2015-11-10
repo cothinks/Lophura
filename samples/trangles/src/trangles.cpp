@@ -8,6 +8,7 @@
 #include "lophura/include/mesh.h"
 #include "lophura/include/swap_chain.h"
 #include "lophura/include/shader.h"
+#include "lophura/include/raster_state.h"
 
 #include "samples/sample_app/include/window/window.h"
 #include "samples/sample_app/include/window/native_window.h"
@@ -93,6 +94,12 @@ public:
 
 		render_->set_render_target(color_buffer,ds_buffer);
 
+		raster_desc rs_desc;
+		rs_desc.fm = fill_solid;
+		rs_desc.cm = cull_none;
+		rs_back_.reset(new raster_state(rs_desc));
+		render_->set_rasterizer_state(rs_back_);
+
 		viewport	vp;
 		vp.w = 800;
 		vp.h = 600;
@@ -102,7 +109,7 @@ public:
 		vp.maxz = 1;
 
 		render_->set_viewport(vp);
-		box_ = creat_box(render_);
+		box_ = creat_trangle(render_);
 
 		rotate_y_ = 0;
 		fps_count = 0;
@@ -137,7 +144,8 @@ public:
 		vec3 camera(80.0f,80.0f,80.0f);
 		matrix44 moudle,world,view,proj,wvp;
 
-		matrix_roty(moudle,rotate_y_);
+		moudle = matrix44::identity();
+		//matrix_roty(moudle,rotate_y_);
 		world  = matrix44::identity();
 
 		matrix_scale(world,30.0f,30.0f,30.0f);
@@ -157,6 +165,7 @@ private:
 
 	float						rotate_y_;
 	mesh_ptr					box_;
+	raster_state_ptr			rs_back_;
 
 	cpp_vertex_shader_ptr		pvs_;
 

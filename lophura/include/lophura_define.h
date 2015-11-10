@@ -51,4 +51,13 @@ enum fill_mode
 	fill_mode_count
 };
 
+enum prim_type
+{
+	pt_none,
+	pt_point,
+	pt_line,
+	pt_solid_tri,
+	pt_wireframe_tri
+};
+
 END_NS_LOPHURA()

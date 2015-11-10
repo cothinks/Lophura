@@ -22,6 +22,11 @@ data_buffer_ptr render_imple::create_buffer(size_t size)
 	return make_shared<data_buffer>(size);
 }
 
+void render_imple::set_rasterizer_state(raster_state_ptr const& rs)
+{
+	state_->ras_state_ = rs;
+}
+
 void render_imple::set_cpp_vertex_shader( cpp_vertex_shader_ptr const& rhs )
 {
 	state_->cpp_vs_ = rhs;

@@ -30,4 +30,5 @@ public:
 END_NS_LOPHURA()
 
 lophura::mesh_ptr	creat_box(lophura::render_ptr render);
+lophura::mesh_ptr	creat_trangle(lophura::render_ptr render);
 

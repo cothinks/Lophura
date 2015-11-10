@@ -184,3 +184,49 @@ mesh_ptr	creat_box(render_ptr render)
 	}
 	return mesh_ptr(mesh);
 }
+
+mesh_ptr creat_trangle(lophura::render_ptr render)
+{
+	mesh_imple* mesh	= new mesh_imple(render);
+
+	size_t const geometry_slot	= 0;
+	size_t const normal_slot	= 1;
+	size_t const uv_slot		= 2;
+
+	{
+		data_buffer_ptr indices	= mesh->create_buffer(sizeof(uint16_t)*36);
+		data_buffer_ptr verts	= mesh->create_buffer(sizeof(vec4)*24);
+		data_buffer_ptr normals	= mesh->create_buffer(sizeof(vec4)*24);
+		data_buffer_ptr uvs		= mesh->create_buffer(sizeof(vec4)*24);
+
+		uint16_t*    pidxs	= reinterpret_cast<uint16_t*>(indices->raw_data(0));
+		vec4*		 pverts = reinterpret_cast<vec4*>(verts->raw_data(0));
+		vec4*		 pnorms = reinterpret_cast<vec4*>(normals->raw_data(0));
+		vec4*		 puvs	= reinterpret_cast<vec4*>(uvs->raw_data(0));
+
+		{
+			//+x
+			pverts[0]	= vec4(1.0f, 0.0f, 0.0f, 1.0f);
+			pverts[1]	= vec4(0.0f, 1.0f, 0.0f, 1.0f);
+			pverts[2]	= vec4(-1.0f, 0.0f, 0.0f, 1.0f);
+			pnorms[0] = pnorms[1] = pnorms[2] = pnorms[3] = vec4(1.0f,0.0f,0.0f,0.0f);
+			//indices
+			pidxs[ 0] = 0;	pidxs[ 1] = 1;	pidxs[ 2] = 2;
+		}
+
+		mesh->add_vertex_buffer(geometry_slot,verts,sizeof(vec4),0);
+		mesh->add_vertex_buffer(normal_slot,normals,sizeof(vec4),0);
+		mesh->add_vertex_buffer(uv_slot,uvs,sizeof(vec4),0);
+		mesh->set_index_buffer(indices, lophura::ifm_16);
+
+		std::vector<input_element_desc> descs;
+		descs.push_back( input_element_desc( "POSITION", 0, fmt_r32g32b32a32_unit, geometry_slot));
+		descs.push_back( input_element_desc( "NORMAL", 0, fmt_r32g32b32a32_unit, normal_slot));
+		descs.push_back( input_element_desc( "TEXCOORD", 0, fmt_r32g32b32a32_unit, uv_slot));
+
+		mesh->set_input_element_desc(descs);
+
+		mesh->set_primitive_count(1);
+	}
+	return mesh_ptr(mesh);
+}
