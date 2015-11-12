@@ -109,7 +109,7 @@ public:
 		vp.maxz = 1;
 
 		render_->set_viewport(vp);
-		box_ = creat_trangle(render_);
+		box_ = creat_box(render_);
 
 		rotate_y_ = 0;
 		fps_count = 0;
@@ -144,8 +144,7 @@ public:
 		vec3 camera(80.0f,80.0f,80.0f);
 		matrix44 moudle,world,view,proj,wvp;
 
-		moudle = matrix44::identity();
-		//matrix_roty(moudle,rotate_y_);
+		matrix_roty(moudle,rotate_y_);
 		world  = matrix44::identity();
 
 		matrix_scale(world,30.0f,30.0f,30.0f);

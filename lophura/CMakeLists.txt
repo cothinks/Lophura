@@ -20,7 +20,6 @@ set	( COMMON_HEADERS
 )
 
 set	( PIPELINE_HEADERS
-	include/pipeline.h
 	include/index_fetcher.h
 	include/data_addressing.h
 	include/render_stages.h
@@ -93,7 +92,6 @@ set ( COMMON_SOURCES
 )
 
 set ( PIPELINE_SOURCES
-	src/pipeline.cpp
 	src/index_fetcher.cpp
 	src/data_addressing.cpp
 	src/stream_assembler.cpp

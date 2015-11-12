@@ -206,9 +206,9 @@ mesh_ptr creat_trangle(lophura::render_ptr render)
 
 		{
 			//+x
-			pverts[0]	= vec4(1.0f, 0.0f, 0.0f, 1.0f);
-			pverts[1]	= vec4(0.0f, 1.0f, 0.0f, 1.0f);
-			pverts[2]	= vec4(-1.0f, 0.0f, 0.0f, 1.0f);
+			pverts[0]	= vec4(0.0f, 0.0f, 0.0f, 1.0f);
+			pverts[1]	= vec4(2.0f, 1.0f, 0.0f, 1.0f);
+			pverts[2]	= vec4(2.0f, 0.0f, 0.0f, 1.0f);
 			pnorms[0] = pnorms[1] = pnorms[2] = pnorms[3] = vec4(1.0f,0.0f,0.0f,0.0f);
 			//indices
 			pidxs[ 0] = 0;	pidxs[ 1] = 1;	pidxs[ 2] = 2;

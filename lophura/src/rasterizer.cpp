@@ -188,6 +188,8 @@ void rasterizer::rasterize_wireframe_triangle(rasterize_prim_context const* ctxt
 
 void rasterizer::rasterize_solid_triangle(rasterize_prim_context const* ctxt)
 {
+	rasterize_wireframe_triangle(ctxt);
+
 	vec4**	data = ctxt->vertex_;
 	color_rgba_32f color = ctxt->color_;
 
@@ -195,29 +197,33 @@ void rasterizer::rasterize_solid_triangle(rasterize_prim_context const* ctxt)
 	vec4*	pos2 = data[1];
 	vec4*	pos3 = data[2];
 
+	//edge function E(x,y) = ( x - X )* dx - ( y - Y)*dy
 	struct equation_param{
-		int k,b;
+		float X,Y,dx,dy;
 	};
 	equation_param edge_equation[3];
 
 	//1-2
-	edge_equation[0].k = (pos2->y() - pos1->y()) / ( pos2->x() - pos1->x());
-	edge_equation[0].b = pos1->y() - edge_equation[0].k * pos1->x();
+	edge_equation[0].X	= pos1->x();
+	edge_equation[0].Y	= pos1->y();
+	edge_equation[0].dx	= pos2->x() - pos1->x();
+	edge_equation[0].dy = pos2->y() - pos1->y();
 	//2-3
-	edge_equation[1].k = (pos3->y() - pos2->y()) / ( pos3->x() - pos2->x());
-	edge_equation[1].b = pos2->y() - edge_equation[1].k * pos2->x();
+	edge_equation[1].X	= pos2->x();
+	edge_equation[1].Y	= pos2->y();
+	edge_equation[1].dx	= pos3->x() - pos2->x();
+	edge_equation[1].dy = pos3->y() - pos2->y();
 	//3-1
-	edge_equation[2].k = (pos1->y() - pos3->y()) / ( pos1->x() - pos3->x());
-	edge_equation[2].b = pos3->y() - edge_equation[2].k * pos3->x();
+	edge_equation[2].X	= pos3->x();
+	edge_equation[2].Y	= pos3->y();
+	edge_equation[2].dx	= pos1->x() - pos3->x();
+	edge_equation[2].dy = pos1->y() - pos3->y();
 
-
-	for (int x = 0; x < 800; ++x){
-		for (int y = 0; y < 600; ++y){
-			if ( ( y - edge_equation[0].k*x - edge_equation[0].b) >0 &&
-				 ( y - edge_equation[1].k*x - edge_equation[1].b) >0 &&
-				 ( y - edge_equation[2].k*x - edge_equation[2].b) >0
-				)
-			{
+	for (float x = 0; x < 800; ++x){
+		for (float y = 0; y < 600; ++y){
+			if ( ( ( x - edge_equation[0].X) * edge_equation[0].dy - ( y - edge_equation[0].Y)*edge_equation[0].dx ) >= 0 &&
+				 ( ( x - edge_equation[1].X) * edge_equation[1].dy - ( y - edge_equation[1].Y)*edge_equation[1].dx ) >= 0 &&
+				 ( ( x - edge_equation[2].X) * edge_equation[2].dy - ( y - edge_equation[2].Y)*edge_equation[2].dx ) >= 0 ){
 				frame_buffer_->set_pos(x,y,color);
 			}
 		}
