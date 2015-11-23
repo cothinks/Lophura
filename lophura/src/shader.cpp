@@ -23,4 +23,8 @@ void cpp_vertex_shader::execute(const vs_input& in, vs_output& out){
 	shader_prog(in, out);
 }
 
+void cpp_pixel_shader::execute( const vs_output& in, ps_output& out ){
+	shader_prog(in,out);
+}
+
 END_NS_LOPHURA()

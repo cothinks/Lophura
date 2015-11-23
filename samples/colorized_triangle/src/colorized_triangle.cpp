@@ -29,8 +29,12 @@ class vs : public cpp_vertex_shader
 public:
 	vs():wvp(matrix44::identity()){
 		declare_constant(_T("WorldViewProjMat"), wvp);
-		
+		declare_constant(_T("Light0"),light0);
+		declare_constant(_T("Light1"),light1);
+		declare_constant(_T("Light2"),light2);
+
 		bind_semantic( "POSITION", 0, 0 );
+		bind_semantic( "NORMAL", 0, 1);
 	}
 
 	vs(const matrix44& wvp):wvp(wvp){}
@@ -38,6 +42,11 @@ public:
 	{
 		vec4 pos = in.attribute(0);
 		transform(out.position(), pos, wvp);
+
+		out.attribute(0) = in.attribute(1);
+		out.attribute(1) = light0 - pos;
+		out.attribute(2) = light1 - pos;
+		out.attribute(3) = light2 - pos;
 	}
 
 	uint32_t num_output_attributes() const
@@ -73,14 +82,41 @@ public:
 class ps : public cpp_pixel_shader
 {
 public:
-	vec4 color;
+	//vec4 color;
 	ps()
 	{
-		declare_constant(_T("Color"),   color );
+		//declare_constant(_T("Color"),   color );
 	}
 	void shader_prog(const vs_output& in, ps_output& out)
 	{
-		out.color = color;
+		//out.color = color;
+		vec3 lightDir0 = in.attribute(1).xyz();
+		vec3 lightDir1 = in.attribute(2).xyz();
+		vec3 lightDir2 = in.attribute(3).xyz();
+
+		vec3 norm = in.attribute(0).xyz();
+
+		float invLight0Distance = 1.0f / lightDir0.length();
+		float invLight1Distance = 1.0f / lightDir1.length();
+		float invLight2Distance = 1.0f / lightDir2.length();
+
+		vec3 normalized_norm = normalize3( norm );
+		vec3 normalized_lightDir0 = lightDir0 * invLight0Distance;
+		vec3 normalized_lightDir1 = lightDir1 * invLight1Distance;
+		vec3 normalized_lightDir2 = lightDir2 * invLight2Distance;
+
+		float refl0 = dot_prod3( normalized_norm, normalized_lightDir0 );
+		float refl1 = dot_prod3( normalized_norm, normalized_lightDir1 );
+		float refl2 = dot_prod3( normalized_norm, normalized_lightDir2 );
+
+		out.color = clampss(
+			vec4(0.7f, 0.1f, 0.3f, 1.0f ) * refl0 * invLight0Distance * invLight0Distance +
+			vec4(0.1f, 0.3f, 0.7f, 1.0f ) * refl1 * invLight1Distance * invLight1Distance +
+			vec4(0.3f, 0.7f, 0.1f, 1.0f ) * refl2 * invLight2Distance * invLight2Distance
+			, 0.0f, 1.0f
+			)
+			;
+		out.color[3] = 1.0f;
 	}
 
 	virtual cpp_shader_ptr clone()
@@ -164,12 +200,15 @@ public:
 
 		render_->clear_color(color_rgba_32f(0.1f,0.1f,0.0f,1.0f));
 
+		//vec3 camera(80.0f,80.0f,80.0f);
 		vec3 camera(cos(camera_angle) * 2.3f, 2.5f, sin(camera_angle) * 2.3f);
 		matrix44 moudle,world,view,proj,wvp;
 
+		//matrix_roty(moudle,rotate_y_);
 		world  = matrix44::identity();
 		moudle = matrix44::identity();
 
+		//matrix_scale(world,30.0f,30.0f,30.0f);
 		matrix_mul(world,moudle,world);
 		matrix_lookat(view,camera,vec3(0.0f,0.0f,0.0f),vec3(0.0f,0.0f,1.0f));
 		matrix_perspective_fov(proj,static_cast<float>(HALF_PI),1.0f,0.1f,1000.0f);
@@ -184,8 +223,8 @@ public:
 		pvs_->set_constant(_T("Light1"),&lightPos1);
 		pvs_->set_constant(_T("Light2"),&lightPos2);
 
-		vec4 color( 0.0f, 1.0f, 0.0f, 1.0f );
-		pps_->set_constant( _T("Color"), &color);
+		//vec4 color( 0.5f, 0.5f, 0.5f, 1.0f );
+		//pps_->set_constant( _T("Color"), &color);
 
 		box_->render();
 		swap_chain_->present();

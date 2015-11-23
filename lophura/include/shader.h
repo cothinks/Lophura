@@ -17,6 +17,8 @@ enum system_values
 	sv_none,
 
 	sv_position,
+	sv_texcoord,
+	sv_normal,
 
 	sv_customized
 };
@@ -47,6 +49,10 @@ public:
 
 		if ("position" == lower_name){
 			sv_ = sv_position;
+		}else if ( lower_name == "normal" ){
+			sv_ = sv_normal;
+		} else if ( lower_name == "texcoord" ){
+			sv_ = sv_texcoord;
 		}
 
 		index_ = index;
@@ -154,6 +160,13 @@ public:
 	virtual void shader_prog(const vs_input& in, vs_output& out) = 0;
 	virtual uint32_t num_output_attributes() const = 0;
 	virtual uint32_t output_attribute_modifiers(uint32_t index) const = 0;
+};
+
+class cpp_pixel_shader : public cpp_shader_imple
+{
+public:
+	void execute(const vs_output& in, ps_output& out);
+	virtual void shader_prog(const vs_output& in, ps_output& out) = 0;
 };
 
 END_NS_LOPHURA()

@@ -9,12 +9,15 @@
 
 BEGIN_NS_LOPHURA()
 
+struct drawing_shader_context
+{
+	cpp_pixel_shader*	cpp_ps;
+};
+
 struct rasterize_prim_context
 {
-	//std::vector<uint32_t> const*	sorted_prims;
-	//viewport const*					tile_vp;
-	lophura_base::vec4**	vertex_;
-	color_rgba_32f	color_;
+	vs_output*				vso_;
+	drawing_shader_context  shaders;
 };
 
 class rasterizer
@@ -39,6 +42,8 @@ private:
 	data_buffer*	frame_buffer_;
 	viewport		vp_;
 	size_t			prim_count_;
+
+	cpp_pixel_shader_ptr	ps_;
 
 	prim_type		prim_;
 	uint32_t		prim_size_;

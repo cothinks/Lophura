@@ -60,14 +60,24 @@ public:
 		return registers_.data();
 	}
 
+	lophura_base::vec4* attribute_data()
+	{
+		return registers_.data() + 1;
+	}
+
+	lophura_base::vec4 const* attribute_data() const
+	{
+		return registers_.data() + 1;
+	}
+
 	lophura_base::vec4& attribute(size_t index)
 	{
-		return registers_[index];
+		return attribute_data()[index];
 	}
 
 	lophura_base::vec4 const& attribute(size_t index) const
 	{
-		return registers_[index];
+		return attribute_data()[index];
 	}
 private:
 	typedef std::tr1::array<
@@ -76,6 +86,11 @@ private:
 
 	vs_output(vs_output const& rhs);
 	//vs_output& operator=(vs_output const& rhs);
+};
+
+struct ps_output
+{
+	lophura_base::vec4 color;
 };
 
 END_NS_LOPHURA()

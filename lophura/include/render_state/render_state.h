@@ -16,6 +16,7 @@ BEGIN_NS_LOPHURA()
 
 LOPHURA_DECLARE_CLASS_SHARED_PTR(data_buffer);
 LOPHURA_DECLARE_CLASS_SHARED_PTR(cpp_vertex_shader);
+LOPHURA_DECLARE_CLASS_SHARED_PTR(cpp_pixel_shader);
 LOPHURA_DECLARE_CLASS_SHARED_PTR(raster_state);
 
 struct render_state
@@ -36,6 +37,7 @@ struct render_state
 	primitive_topology		primitive_topology_;
 
 	cpp_vertex_shader_ptr	cpp_vs_;
+	cpp_pixel_shader_ptr	cpp_ps_;
 
 	size_t					start_index_;
 	size_t					primitive_count_;

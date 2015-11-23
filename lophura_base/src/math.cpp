@@ -3,6 +3,62 @@
 
 namespace lophura_base
 {
+	vec2 clampss(const vec2& v, float min, float max)
+	{
+		return vec2(
+			clamp(v[0], min, max),
+			clamp(v[1], min, max)
+			);
+	}
+
+	vec3 clampss(const vec3& v, float min, float max)
+	{
+		return vec3(
+			clamp(v[0], min, max),
+			clamp(v[1], min, max),
+			clamp(v[2], min, max)
+			);
+	}
+
+	vec4 clampss(const vec4& v, float min, float max)
+	{
+		return vec4(
+			clamp(v[0], min, max),
+			clamp(v[1], min, max),
+			clamp(v[2], min, max),
+			clamp(v[3], min, max)
+			);
+	}
+
+	vec2 normalize2(const vec2& v)
+	{
+		float length = v.length();
+		if(equal<float>(length, 0.0f)){
+			length = 1.0f;
+		}
+		float inv_length = 1.0f / length;
+		return v * inv_length;
+	}
+
+	vec3 normalize3(const vec3& v)
+	{
+		float length = v.length();
+		if(equal<float>(length, 0.0f)){
+			length = 1.0f;
+		}
+		float inv_length = 1.0f / length;
+		return v * inv_length;
+	}
+
+	vec4 normalize4(const vec4& v)
+	{
+		float length = v.length();
+		if(equal<float>(length, 0.0f)){
+			length = 1.0f;
+		}
+		float inv_length = 1.0f / length;
+		return v * inv_length;
+	}
 
 vec3 cross_prod3(vec3 const& v1,vec3 const& v2)
 {

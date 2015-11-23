@@ -32,6 +32,11 @@ void render_imple::set_cpp_vertex_shader( cpp_vertex_shader_ptr const& rhs )
 	state_->cpp_vs_ = rhs;
 }
 
+void render_imple::set_cpp_pixel_shader(cpp_pixel_shader_ptr const& rhs)
+{
+	state_->cpp_ps_ = rhs;
+}
+
 void render_imple::set_input_layout( input_layout_ptr const& layout )
 {
 	state_->input_layout_ = layout;

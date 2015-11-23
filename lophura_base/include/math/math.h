@@ -4,6 +4,8 @@
 #include "lophura_base/include/math/vector.h"
 #include "lophura_base/include/math/matrix.h"
 
+#include <limits>
+
 namespace lophura_base
 {
 	template<typename param_type>
@@ -15,6 +17,45 @@ namespace lophura_base
 		if(val > max_val) return max_val;
 		return val;
 	}
+
+	template <class T>
+	bool equal(const T& in1, const T& in2)
+	{
+		if((T)(std::abs(in1 - in2)) <= std::numeric_limits<T>::epsilon()) return true;
+		return false;
+	}
+
+	inline bool equal(const vec2& v1, const vec2& v2){
+		return
+			equal(v1.x(), v2.x()) &&
+			equal(v1.y(), v2.y());
+	}
+
+	inline bool equal(const vec3& v1, const vec3& v2)
+	{
+		return
+			equal(v1.x(), v2.x()) &&
+			equal(v1.y(), v2.y()) &&
+			equal(v1.z(), v2.z());
+	}
+
+	inline bool equal(const vec4& v1, const vec4& v2)
+	{
+		return
+			equal(v1.x(), v2.x()) &&
+			equal(v1.y(), v2.y()) &&
+			equal(v1.z(), v2.z()) &&
+			equal(v1.w(), v2.w())
+			;
+	}
+
+	vec2 clampss(const vec2& v, float min, float max);
+	vec3 clampss(const vec3& v, float min, float max);
+	vec4 clampss(const vec4& v, float min, float max);
+// base vector function
+	vec2 normalize2(const vec2& v);
+	vec3 normalize3(const vec3& v);
+	vec4 normalize4(const vec4& v);
 
 //vector transform
 	float		dot_prod3(const vec3& v1, const vec3& v2);

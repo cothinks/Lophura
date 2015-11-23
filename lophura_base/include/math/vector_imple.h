@@ -18,16 +18,25 @@ namespace lophura_base
 			assert(index < size);
 			return data_[index];
 		}
+
+		param_type length_sqr() const
+		{
+			param_type total = param_type(0);
+			for( int i = 0; i < size; ++i )
+			{
+				total += data_[i] * data_[i];
+			}
+			return total;
+		}
+
+		param_type length() const
+		{
+			return ::sqrt(length_sqr());
+		}
 		
 		void normalize()
 		{
-			param_type  sum = 0.0f;
-			for (int i = 0;i < size; ++i)
-			{
-				sum += data_[i]*data_[i];
-			}
-
-			sum = sqrt(sum);
+			param_type  sum = length();
 			for (int i = 0;i <size; ++i)
 			{
 				data_[i] /= sum;
@@ -125,11 +134,24 @@ namespace lophura_base
 			return vector<param_type,2>(x(),y());
 		}
 
+		vector<param_type,3> xyz() const
+		{
+			return vector<param_type,3>(x(),y(),z());
+		}
+
 		static vector<param_type,4> zero()
 		{
 			return vector<param_type,4>(0,0,0,0);
 		}
 	};
+
+	template<typename param_type,int size>
+	vector<param_type,size> operator + (vector<param_type,size> const& lhs,vector<param_type,size> const& rhs)
+	{
+		vector<param_type,size> ret;
+		for ( int i = 0; i < size; ++i){ ret.data_[i] = lhs.data_[i] + rhs.data_[i];}
+		return ret;
+	}
 
 	template<typename param_type,int size>
 	vector<param_type,size> operator - (vector<param_type,size> const& lhs,vector<param_type,size> const& rhs)

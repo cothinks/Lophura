@@ -20,6 +20,31 @@ void viewport_transform(vec4& position, const viewport& vp)
 	position[3] = invw;
 }
 
+bool get_interp_info( const vec2& vp, vec4** vt, float& u, float& v)
+{
+	float a1 = vt[1]->x() - vt[0]->x();
+	float b1 = vt[2]->x() - vt[0]->x();
+	float c1 = vp.x() - vt[0]->x();
+
+	float a2 = vt[1]->y() - vt[0]->y();
+	float b2 = vt[2]->y() - vt[0]->y();
+	float c2 = vp.y() - vt[0]->y();
+
+	u = ( b2*c1 - b1*c2 ) / ( -a2*b1 + a1*b2);
+	v = ( a2*c1 - a1*c2 ) / ( a2*b1 - a1*b2);
+
+	return true;
+}
+
+color_rgba_32f gen_interp_val( const vec2& vp, vec4** vt, color_rgba_32f* colors)
+{
+	float u,v;
+	get_interp_info( vp,vt,u,v);
+
+	return colors[0]*(1-u-v) + colors[1]*u 
+			+ colors[2]*v;
+}
+
 void rasterizer::initialize(render_stages const* stages)
 {
 	addressing_ = stages->data_address_;
@@ -31,6 +56,8 @@ void rasterizer::update(render_state const* state)
 	frame_buffer_	= state->color_target_.get();
 	vp_				= state->view_port_;
 	prim_count_		= state->primitive_count_;
+
+	ps_				= state->cpp_ps_;
 
 	update_prim_info(state);
 }
@@ -59,16 +86,13 @@ void rasterizer::draw()
 		vs_output vo[3];
 		addressing_->fetch3( vo, prim_id);
 
-		color_rgba_32f color(0.0f,1.0f,0.0f,1.0f);
-		vec4* trangles[] = { &(vo[0].position()), &(vo[1].position()), &(vo[2].position())};
-
-		for (auto const& pos : trangles){
-			viewport_transform(*pos,vp);
+		for (auto& v : vo){
+			viewport_transform(v.position(),vp);
 		}
 
 		rasterize_prim_context rs_ctxt;
-		rs_ctxt.vertex_ = trangles;
-		rs_ctxt.color_	= color;
+		rs_ctxt.vso_ = vo;
+		rs_ctxt.shaders.cpp_ps = ps_.get();
 
 		rasterize_prims_(this,&rs_ctxt);
 	}
@@ -174,28 +198,44 @@ void rasterizer::rasterize_line(const vec2& v1,const vec2& v2, color_rgba_32f cl
 
 void rasterizer::rasterize_wireframe_triangle(rasterize_prim_context const* ctxt)
 {
-	vec4**	data = ctxt->vertex_;
-	color_rgba_32f color = ctxt->color_;
+	assert(false && "unimplemented!");
+	return;
 
-	vec4*	pos1 = data[0];
-	vec4*	pos2 = data[1];
-	vec4*	pos3 = data[2];
+	//vec4**	data = ctxt->vertex_;
 
-	rasterize_line(pos1->xy(),pos2->xy(),color);
-	rasterize_line(pos2->xy(),pos3->xy(),color);
-	rasterize_line(pos3->xy(),pos1->xy(),color);
+// 	vec4*	pos1 = data[0];
+// 	vec4*	pos2 = data[1];
+// 	vec4*	pos3 = data[2];
+// 
+// 	rasterize_line(pos1->xy(),pos2->xy(),color);
+// 	rasterize_line(pos2->xy(),pos3->xy(),color);
+// 	rasterize_line(pos3->xy(),pos1->xy(),color);
 }
 
 void rasterizer::rasterize_solid_triangle(rasterize_prim_context const* ctxt)
 {
-	rasterize_wireframe_triangle(ctxt);
+	vs_output*	vso = ctxt->vso_;
+	//color_rgba_32f color = ctxt->color_;
+	cpp_pixel_shader* ps = ctxt->shaders.cpp_ps;
 
-	vec4**	data = ctxt->vertex_;
-	color_rgba_32f color = ctxt->color_;
+	vec4*	pos1 = &vso[0].position();
+	vec4*	pos2 = &vso[1].position();
+	vec4*	pos3 = &vso[2].position();
 
-	vec4*	pos1 = data[0];
-	vec4*	pos2 = data[1];
-	vec4*	pos3 = data[2];
+	color_rgba_32f color3[3] = { color_rgba_32f(),color_rgba_32f(),color_rgba_32f()};
+
+	if ( ps )
+	{
+		for (int i = 0;i < 3;++i)
+		{
+			vs_output& in = vso[i];
+			//in.position() = *data[i];
+
+			ps_output out;
+			ps->execute(in,out);
+			color3[i] = color_rgba_32f(out.color.x(),out.color.y(),out.color.z(),out.color.w());
+		}
+	}
 
 	//edge function E(x,y) = ( x - X )* dx - ( y - Y)*dy
 	struct equation_param{
@@ -224,6 +264,19 @@ void rasterizer::rasterize_solid_triangle(rasterize_prim_context const* ctxt)
 			if ( ( ( x - edge_equation[0].X) * edge_equation[0].dy - ( y - edge_equation[0].Y)*edge_equation[0].dx ) >= 0 &&
 				 ( ( x - edge_equation[1].X) * edge_equation[1].dy - ( y - edge_equation[1].Y)*edge_equation[1].dx ) >= 0 &&
 				 ( ( x - edge_equation[2].X) * edge_equation[2].dy - ( y - edge_equation[2].Y)*edge_equation[2].dx ) >= 0 ){
+
+				
+
+				vec4* data[3] = { &vso[0].position()
+								 ,&vso[1].position()
+								 ,&vso[2].position()
+				};
+
+				color_rgba_32f color;
+
+				vec2 p(x,y);
+				color = gen_interp_val(p,data,color3);
+
 				frame_buffer_->set_pos(x,y,color);
 			}
 		}

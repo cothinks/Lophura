@@ -19,6 +19,7 @@ public:
 
 	virtual void		set_rasterizer_state(raster_state_ptr const& rs) override;
 	virtual void		set_cpp_vertex_shader(cpp_vertex_shader_ptr const& rhs) override;
+	virtual void		set_cpp_pixel_shader(cpp_pixel_shader_ptr const& rhs) override;
 	virtual void		set_input_layout( input_layout_ptr const& layout ) override;
 	virtual void		set_vertex_buffer( 
 		size_t start_slot, 
