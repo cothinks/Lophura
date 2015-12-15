@@ -50,6 +50,8 @@ public:
 	void* texel_address(size_t x, size_t y, size_t sample);
 	void const* texel_address(size_t x, size_t y, size_t sample) const;
 
+	color_rgba_32f get_texel(size_t x, size_t y, size_t sample) const;
+
 	void fill_texels(size_t sx, size_t sy, size_t width, size_t height, const color_rgba_32f& color);
 	void fill_texels(color_rgba_32f const& color);
 private:

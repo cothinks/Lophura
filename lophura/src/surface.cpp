@@ -11,6 +11,12 @@ surface::surface(size_t width, size_t height, size_t num_sample, color_format fm
 				,format_(fmt)
 				,elem_size_(4)
 {
+	if (fmt == fmt_r32g32b32a32_unit){
+		elem_size_ = sizeof(color_rgba_32f);
+	}else{
+		elem_size_ = 4;
+	}
+
 	data_.resize(pitch() * height);
 }
 
@@ -35,6 +41,19 @@ void const* surface::texel_address(size_t x, size_t y, size_t sample) const
 void surface::fill_texels(color_rgba_32f const& color)
 {
 	fill_texels(0, 0, size_[0], size_[1], color);
+}
+
+color_rgba_32f surface::get_texel(size_t x, size_t y, size_t sample) const
+{
+	color_rgba_32f color;
+	uint8_t const* pix_clr = reinterpret_cast<uint8_t const*>(texel_address(x,y,sample));
+
+	color.b = pix_clr[0] / 255.0f;
+	color.g = pix_clr[1] / 255.0f;
+	color.r = pix_clr[2] / 255.0f;
+	color.a = pix_clr[3] / 255.0f;
+
+	return color;
 }
 
 void surface::fill_texels(size_t sx, size_t sy, size_t width, size_t height, const color_rgba_32f& color)

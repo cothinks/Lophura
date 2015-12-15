@@ -19,7 +19,7 @@ public:
 	bool early_z_enable() const { return early_z_enable_; }
 	uint64_t early_z_test(size_t x, size_t y, float depth);
 
-	void render_sample(size_t x,size_t y,color_rgba_32f const& clr);
+	void render_sample(size_t x,size_t y,float depth,color_rgba_32f const& clr);
 private:
 	bool		early_z_enable_;
 	surface*	color_target_;

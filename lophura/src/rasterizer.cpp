@@ -45,6 +45,15 @@ color_rgba_32f gen_interp_val( const vec2& vp, vec4** vt, color_rgba_32f* colors
 			+ colors[2]*v;
 }
 
+float gen_interp_z_val( const vec2& vp, vec4** vt )
+{
+	float u,v;
+	get_interp_info( vp,vt,u,v);
+
+	return vt[0]->z()*(1-u-v) + vt[1]->z()*u 
+		+ vt[2]->z()*v;
+}
+
 void rasterizer::initialize(render_stages const* stages)
 {
 	frame_buffer_	= stages->backend.get();
@@ -265,9 +274,8 @@ void rasterizer::rasterize_solid_triangle(rasterize_prim_context const* ctxt)
 
 				vec2 p(x,y);
 				color = gen_interp_val(p,data,color3);
-
-				//frame_buffer_->set_pos(x,y,color);
-				frame_buffer_->render_sample(x,y,color);
+				float depth = gen_interp_z_val(p,data);
+				frame_buffer_->render_sample(x,y,depth,color);
 			}
 		}
 	}

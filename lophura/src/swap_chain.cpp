@@ -29,7 +29,7 @@ public:
 		size_t num_samples	= swap_chain_param.num_samples;
 		color_format fmt	= swap_chain_param.color_fmt;
 		
-		color_target_ = make_shared<surface>(width, height, num_samples,fmt);
+		color_target_ = make_shared<surface>(width, height, num_samples,fmt_unknown);
 	}
 
 	surface_ptr	get_surface() override { return color_target_; }

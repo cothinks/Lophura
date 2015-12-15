@@ -105,6 +105,7 @@ public:
 		swap_chain_param.width = 800;
 		swap_chain_param.height = 600;
 		swap_chain_param.color_fmt = fmt_r32g32b32a32_unit;
+		swap_chain_param.num_samples = 1;
 		swap_chain_param.any_data = uint64_t(::GetDC((HWND)data));
 
 		lophura_create_swap_chain(swap_chain_,swap_chain_param);
