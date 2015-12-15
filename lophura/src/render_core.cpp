@@ -1,6 +1,7 @@
 #include "lophura/include/render_core.h"
 #include "lophura/include/render_state/render_state.h"
 #include "lophura/include/rasterizer.h"
+#include "lophura/include/framebuffer.h"
 
 BEGIN_NS_LOPHURA()
 
@@ -9,6 +10,7 @@ render_core::render_core(void)
 	stages_.assembler_		.reset( new stream_assembler());
 	stages_.data_address_	.reset( new data_addressing());
 	stages_.ras_			.reset( new rasterizer());
+	stages_.backend			.reset(	new framebuffer());
 
 	stages_.data_address_->initialize(&stages_);
 	stages_.ras_->initialize(&stages_);
@@ -41,7 +43,7 @@ void render_core::execute()
 
 void render_core::clear_color()
 {
-	state_->color_target_->fill_color(state_->clear_color_);
+	state_->color_target_->fill_texels(state_->clear_color_);
 }
 
 void render_core::draw()

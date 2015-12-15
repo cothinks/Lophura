@@ -11,5 +11,5 @@ namespace lophura_base
 #else
 	typedef std::string		kstring;
 #endif
-
+	typedef uint8_t			byte;
 };

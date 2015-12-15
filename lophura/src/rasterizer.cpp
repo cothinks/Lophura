@@ -47,25 +47,24 @@ color_rgba_32f gen_interp_val( const vec2& vp, vec4** vt, color_rgba_32f* colors
 
 void rasterizer::initialize(render_stages const* stages)
 {
-	addressing_ = stages->data_address_;
+	frame_buffer_	= stages->backend.get();
+	addressing_		= stages->data_address_;
 }
 
 void rasterizer::update(render_state const* state)
 {
 	rs_state_		= state->ras_state_.get();
-	frame_buffer_	= state->color_target_.get();
 	vp_				= state->view_port_;
 	prim_count_		= state->primitive_count_;
 
 	ps_				= state->cpp_ps_;
 
 	update_prim_info(state);
+	frame_buffer_->update(state);
 }
 
 void rasterizer::draw()
 {
-	data_buffer* color_target= frame_buffer_;
-
 	size_t prim_count	= prim_count_;
 	viewport const& vp	= vp_;
 
@@ -191,7 +190,7 @@ void rasterizer::rasterize_line(const vec2& v1,const vec2& v2, color_rgba_32f cl
 		float y = start_pos.y() + ( x - start_pos.x()) * angle;
 
 		if( ( x >= 0 && x < 800 ) && ( y >= 0 && y < 600)){
-			frame_buffer_->set_pos(x,y,clr);
+			//frame_buffer_->set_pos(x,y,clr);
 		}
 	}
 }
@@ -200,16 +199,6 @@ void rasterizer::rasterize_wireframe_triangle(rasterize_prim_context const* ctxt
 {
 	assert(false && "unimplemented!");
 	return;
-
-	//vec4**	data = ctxt->vertex_;
-
-// 	vec4*	pos1 = data[0];
-// 	vec4*	pos2 = data[1];
-// 	vec4*	pos3 = data[2];
-// 
-// 	rasterize_line(pos1->xy(),pos2->xy(),color);
-// 	rasterize_line(pos2->xy(),pos3->xy(),color);
-// 	rasterize_line(pos3->xy(),pos1->xy(),color);
 }
 
 void rasterizer::rasterize_solid_triangle(rasterize_prim_context const* ctxt)
@@ -277,7 +266,8 @@ void rasterizer::rasterize_solid_triangle(rasterize_prim_context const* ctxt)
 				vec2 p(x,y);
 				color = gen_interp_val(p,data,color3);
 
-				frame_buffer_->set_pos(x,y,color);
+				//frame_buffer_->set_pos(x,y,color);
+				frame_buffer_->render_sample(x,y,color);
 			}
 		}
 	}

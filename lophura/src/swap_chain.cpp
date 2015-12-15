@@ -1,5 +1,6 @@
 #include "lophura/include/swap_chain.h"
-#include "lophura/include/data_buffer.h"
+//#include "lophura/include/data_buffer.h"
+#include "lophura/include/surface.h"
 
 #include <windows.h>
 
@@ -19,25 +20,22 @@ public:
 	swap_chain_imple()
 	{}
 
-	void			create(swap_chain_parameter const& swap_chain_param) override {
-
+	void			create(swap_chain_parameter const& swap_chain_param) override
+	{
 		swap_chain_param_ = swap_chain_param;
 
-		uint32_t width	= swap_chain_param_.width;
-		uint32_t height	= swap_chain_param_.height;
-		size_t	byte_count = 4;
-
-		color_target_ = make_shared<data_buffer>(width*height*byte_count);
+		size_t width		= swap_chain_param.width;
+		size_t height		= swap_chain_param.height;
+		size_t num_samples	= swap_chain_param.num_samples;
+		color_format fmt	= swap_chain_param.color_fmt;
+		
+		color_target_ = make_shared<surface>(width, height, num_samples,fmt);
 	}
 
-	data_buffer_ptr	get_buffer() override {
-		return color_target_;
-	}
-
+	surface_ptr	get_surface() override { return color_target_; }
 protected:
-	data_buffer_ptr			color_target_;
+	surface_ptr				color_target_;
 	swap_chain_parameter	swap_chain_param_;
-
 	uint64_t				any_data_;				
 };
 
@@ -61,7 +59,7 @@ public:
 		uint32_t width	= swap_chain_param_.width;
 		uint32_t height	= swap_chain_param_.height;
 
-		::SetDIBitsToDevice(hdc_,0,0,width,height,0,0,0,height,reinterpret_cast<void*>(color_target_->raw_data(0))
+		::SetDIBitsToDevice(hdc_, 0, 0, width, height, 0, 0, 0, height, reinterpret_cast<void*>(color_target_->texel_address(0,0,1))
 			,&bitmap_info_,DIB_RGB_COLORS);
 	}
 private:

@@ -9,6 +9,7 @@
 #include "lophura/include/colors.h"
 #include "lophura/include/render_state/input_layout.h"
 #include "lophura/include/render_state/input_assembly_state.h"
+//#include "lophura/include/surface.h"
 
 #include "lophura_base/include/utility/shared_declaration.h"
 
@@ -18,6 +19,7 @@ LOPHURA_DECLARE_CLASS_SHARED_PTR(data_buffer);
 LOPHURA_DECLARE_CLASS_SHARED_PTR(cpp_vertex_shader);
 LOPHURA_DECLARE_CLASS_SHARED_PTR(cpp_pixel_shader);
 LOPHURA_DECLARE_CLASS_SHARED_PTR(raster_state);
+LOPHURA_DECLARE_CLASS_SHARED_PTR(surface);
 
 struct render_state
 {
@@ -29,8 +31,8 @@ struct render_state
 	input_layout_ptr		input_layout_;
 	input_assembly_state	input_assembly_slots_;
 
-	data_buffer_ptr			color_target_;
-	data_buffer_ptr			depth_stencil_target_;
+	surface_ptr				color_target_;
+	surface_ptr				depth_stencil_target_;
 
 	viewport				view_port_;
 	raster_state_ptr		ras_state_;

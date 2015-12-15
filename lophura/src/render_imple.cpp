@@ -22,6 +22,11 @@ data_buffer_ptr render_imple::create_buffer(size_t size)
 	return make_shared<data_buffer>(size);
 }
 
+surface_ptr render_imple::create_tex2d(size_t width, size_t height, size_t num_samples, color_format fmt)
+{
+	return make_shared<surface>(width,height,num_samples,fmt);
+}
+
 void render_imple::set_rasterizer_state(raster_state_ptr const& rs)
 {
 	state_->ras_state_ = rs;
@@ -53,7 +58,7 @@ void render_imple::set_index_buffer(data_buffer_ptr const& buffer,index_format i
 	state_->index_format_ = index_fmt;
 }
 
-void render_imple::set_render_target( data_buffer_ptr const& color_buffer,data_buffer_ptr const& ds_buffer )
+void render_imple::set_render_target(surface_ptr const& color_buffer, surface_ptr const& ds_buffer)
 {
 	state_->color_target_			= color_buffer;
 	state_->depth_stencil_target_	= ds_buffer;
@@ -90,7 +95,6 @@ void render_imple::commit_command()
 {
 	render_core_.process_render_request(state_);
 }
-
 
 
 END_NS_LOPHURA()

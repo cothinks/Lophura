@@ -16,6 +16,7 @@ public:
 	~render_imple(void);
 public:
 	virtual data_buffer_ptr	create_buffer(size_t size) override;
+	virtual surface_ptr		create_tex2d(size_t width, size_t height, size_t num_samples, color_format fmt) override;
 
 	virtual void		set_rasterizer_state(raster_state_ptr const& rs) override;
 	virtual void		set_cpp_vertex_shader(cpp_vertex_shader_ptr const& rhs) override;
@@ -26,7 +27,7 @@ public:
 		data_buffer_ptr const* buffer, size_t buffer_count,
 		size_t const* strides, size_t const* offsets ) override;
 	virtual void		set_index_buffer(data_buffer_ptr const& buffer,index_format index_fmt) override;
-	virtual void		set_render_target(data_buffer_ptr const& color_buffer,data_buffer_ptr const& ds_buffer) override;
+	virtual void		set_render_target(surface_ptr const& color_buffer, surface_ptr const& ds_buffer) override;
 
 	virtual void		set_viewport(viewport const& view_port) override;
 	virtual void		set_primitive_topology(primitive_topology pt) override;

@@ -3,6 +3,7 @@
 #include "lophura/include/lophura_forward.h"
 #include "lophura/include/render_stages.h"
 #include "lophura/include/raster_state.h"
+#include "lophura/include/framebuffer.h"
 #include "lophura_base/include/math/vector.h"
 
 #include <functional>
@@ -28,7 +29,6 @@ public:
 	void draw();
 
 	void update_prim_info(render_state const* state);
-	//void rasterize_multi_line(rasterize_multi_prim_context const*);
 	void rasterize_line(const lophura_base::vec2& v1,const lophura_base::vec2& v2,
 				color_rgba_32f clr);
 	void rasterize_wireframe_triangle(rasterize_prim_context const*);
@@ -36,10 +36,10 @@ public:
 private:
 	raster_state*	rs_state_;
 
+	framebuffer*	frame_buffer_;
 	data_addressing_ptr		addressing_;
 
 	vs_output*		clipped_verts_;
-	data_buffer*	frame_buffer_;
 	viewport		vp_;
 	size_t			prim_count_;
 

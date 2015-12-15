@@ -8,9 +8,9 @@ BEGIN_NS_LOPHURA()
 
 struct swap_chain_parameter
 {
-	uint32_t	width;
-	uint32_t	height;
-
+	size_t			width;
+	size_t			height;
+	size_t			num_samples;
 	color_format	color_fmt;
 	uint64_t		any_data;
 };

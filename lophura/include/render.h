@@ -18,6 +18,7 @@ LOPHURA_DECLARE_STRUCT_SHARED_PTR(render_state);
 LOPHURA_DECLARE_CLASS_SHARED_PTR(data_buffer);
 LOPHURA_DECLARE_CLASS_SHARED_PTR(input_layout);
 LOPHURA_DECLARE_CLASS_SHARED_PTR(raster_state);
+LOPHURA_DECLARE_CLASS_SHARED_PTR(surface);
 
 class render
 {
@@ -26,6 +27,7 @@ public:
 	virtual ~render(void){};
 public:
 	virtual data_buffer_ptr	create_buffer(size_t size) = 0;
+	virtual	surface_ptr		create_tex2d(size_t width,size_t height,size_t num_samples,color_format fmt) = 0;
 
 	virtual void		set_rasterizer_state(raster_state_ptr const& rs) = 0;
 	virtual void		set_cpp_vertex_shader(cpp_vertex_shader_ptr const& rhs) = 0;
@@ -36,7 +38,7 @@ public:
 		data_buffer_ptr const* buffer, size_t buffer_count,
 		size_t const* strides, size_t const* offsets ) = 0;
 	virtual void		set_index_buffer(data_buffer_ptr const& buffer,index_format index_fmt)	= 0;
-	virtual void		set_render_target(data_buffer_ptr const& color_buffer,data_buffer_ptr const& ds_buffer) = 0;
+	virtual void		set_render_target(surface_ptr const& color_buffer, surface_ptr const& ds_buffer) = 0;
 	virtual void		set_viewport(viewport const& view_port) = 0;
 	virtual void		set_primitive_topology(primitive_topology pt) = 0;
 

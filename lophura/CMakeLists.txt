@@ -26,6 +26,7 @@ set	( PIPELINE_HEADERS
 	include/stream_assembler.h
 	include/rasterizer.h
 	include/raster_state.h
+	include/framebuffer.h
 )
 
 set ( RENDER_STATE_HEADERS
@@ -42,6 +43,7 @@ set	( RENDER_HEADERS
 	include/render_core.h
 	include/swap_chain.h
 	include/data_buffer.h
+	include/surface.h
 )
 
 set ( RESOURCE_HEADERS
@@ -97,6 +99,7 @@ set ( PIPELINE_SOURCES
 	src/stream_assembler.cpp
 	src/rasterizer.cpp
 	src/raster_state.cpp
+	src/framebuffer.cpp
 )
 
 set ( RENDER_STATE_SOURCES 
@@ -106,6 +109,7 @@ set ( RENDER_STATE_SOURCES
 
 set	( RENDER_SOURCES
 	src/data_buffer.cpp
+	src/surface.cpp
 	src/render_imple.cpp
 	src/syn_render.cpp
 	src/asyn_render.cpp

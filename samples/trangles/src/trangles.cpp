@@ -110,8 +110,8 @@ public:
 		lophura_create_swap_chain(swap_chain_,swap_chain_param);
 
 		lophura_create_render(render_,lophura::render_syn);
-		data_buffer_ptr color_buffer	= swap_chain_->get_buffer();
-		data_buffer_ptr ds_buffer		= render_->create_buffer(800*600*4);
+		surface_ptr color_buffer	= swap_chain_->get_surface();
+		surface_ptr ds_buffer = render_->create_tex2d(800, 600, 1, fmt_r32g32b32a32_unit);
 
 		render_->set_render_target(color_buffer,ds_buffer);
 

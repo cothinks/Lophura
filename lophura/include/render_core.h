@@ -17,7 +17,6 @@ public:
 	void process_render_request(render_state_ptr const& state);
 protected:
 	void execute();
-protected:
 	void clear_color();
 	void draw();
 protected:
