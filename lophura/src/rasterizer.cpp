@@ -8,7 +8,7 @@ BEGIN_NS_LOPHURA()
 void viewport_transform(vec4& position, const viewport& vp)
 {
 
-	float invw = ( position[3] == 0.0f) ? 1.0f : 1.0f / position[3];
+ 	float invw = ( position[3] == 0.0f) ? 1.0f : 1.0f / position[3];
 	vec4 pos = position * invw;
 
 	float ox = (vp.x + vp.w) * 0.5f;
@@ -19,6 +19,8 @@ void viewport_transform(vec4& position, const viewport& vp)
 	position[2] = (vp.maxz - vp.minz) * pos.z() + vp.minz;
 	position[3] = invw;
 }
+
+
 
 bool get_interp_info( const vec2& vp, vec4** vt, float& u, float& v)
 {
@@ -52,6 +54,52 @@ float gen_interp_z_val( const vec2& vp, vec4** vt )
 
 	return vt[0]->z()*(1-u-v) + vt[1]->z()*u 
 		+ vt[2]->z()*v;
+}
+
+float get_edeg(vec2 v1, vec2 v2)
+{
+	float edeg = (v2.x() - v1.x())*(v2.x() - v1.x()) + (v2.y() - v1.y())*(v2.y() - v1.y());
+	 edeg = sqrt(edeg);
+
+	if (edeg <= 0)
+	{
+		//void(0);
+		return 1;
+	}
+
+	return edeg;
+}
+
+float get_area(vec2 v1,vec2 v2,vec2 v3)
+{
+	float edge[3];
+
+	edge[0] = get_edeg(v1,v2);
+	edge[1] = get_edeg(v2,v3);
+	edge[2] = get_edeg(v3,v1);
+
+	assert(edge[0] > 0 && edge[1] > 0 && edge[2] > 0);
+
+	float s = 1.0f / 2 * (edge[0] + edge[1] + edge[2]);
+
+	float area = s*(s - edge[0])*(s - edge[1])*(s - edge[2]);
+	return sqrt(area);
+
+}
+
+vec3 get_trangle_weight(const vec2& vp, vec4** vt)
+{
+	vec4* A = vt[0];
+	vec4* B = vt[1];
+	vec4* C = vt[2];
+
+	float T1 = get_area(vp,B->xy(),C->xy());
+	float T2 = get_area(vp,A->xy(),C->xy());
+	float T3 = get_area(vp,A->xy(),B->xy());
+
+	float T = get_area(A->xy(),B->xy(),C->xy());
+
+	return vec3(T1/T,T2/T,T3/T);
 }
 
 void rasterizer::initialize(render_stages const* stages)
@@ -210,6 +258,81 @@ void rasterizer::rasterize_wireframe_triangle(rasterize_prim_context const* ctxt
 	return;
 }
 
+
+int get_critical_edge(vec4** vertex, float y, std::vector<size_t>& inter_edge)
+{
+	//3edge
+	size_t edge[3][2] = { { 0, 1 }
+						, { 1, 2 }
+						, { 2, 0 } };
+	//height filter
+	inter_edge.clear();
+	
+	for (size_t i = 0; i < 3; i++)
+	{
+		vec4* vpos1 = vertex[edge[i][0]];
+		vec4* vpos2 = vertex[edge[i][1]];
+
+		float min_y, max_y;
+		min_y = std::min(vpos1->y(),vpos2->y());
+		max_y = std::max(vpos1->y(),vpos2->y());//vpos1->y() + vpos2-
+
+		//matched
+		if (min_y <= y && y <= max_y)
+		{
+			inter_edge.push_back(i);
+		}
+	}
+
+	//assert(inter_edge.size() <= 2);
+
+	return inter_edge.size();
+}
+
+void lerp(vec4** vertex, float y, const color_rgba_32f* vertex_color, vs_output* out_vertex)
+{
+	std::vector<size_t> edges;
+	int edge_count = get_critical_edge(vertex, y, edges);
+
+	//3edge
+	size_t edge[3][2] = { { 0, 1 }
+						, { 1, 2 }
+						, { 2, 0 } };
+
+	int counter = 0;
+	for (size_t i = 0; i < edges.size(); i++)
+	{
+		size_t edge_index = edges[i];
+
+		vec4* vpos1 = vertex[edge[edge_index][0]];
+		vec4* vpos2 = vertex[edge[edge_index][1]];
+
+		float t = ( y - vpos1->y() ) / ( vpos2->y() - vpos1->y() );
+		vec4 vpos = *vpos1 + (*vpos2 - *vpos1)*t;
+
+		color_rgba_32f color1 = vertex_color[edge[edge_index][0]];
+		color_rgba_32f color2 = vertex_color[edge[edge_index][1]];
+		color_rgba_32f color = color1 + (color2 - color1)*t;
+
+		bool repeated = false;
+		for (size_t j = 0; j < 2; ++j)
+		{
+			if (vpos == out_vertex[j].position())
+			{
+				repeated = true;
+			}
+		}
+
+		if (repeated)
+		{
+			continue;
+		}
+
+		out_vertex[counter].position() = vpos;
+		out_vertex[counter++].attribute(1) = vec4(color.r, color.g, color.b, color.a);
+	}
+}
+
 void rasterizer::rasterize_solid_triangle(rasterize_prim_context const* ctxt)
 {
 	vs_output*	vso = ctxt->vso_;
@@ -257,26 +380,32 @@ void rasterizer::rasterize_solid_triangle(rasterize_prim_context const* ctxt)
 	edge_equation[2].dx	= pos1->x() - pos3->x();
 	edge_equation[2].dy = pos1->y() - pos3->y();
 
-	for (float x = 0; x < 800; ++x){
-		for (float y = 0; y < 600; ++y){
-			if ( ( ( x - edge_equation[0].X) * edge_equation[0].dy - ( y - edge_equation[0].Y)*edge_equation[0].dx ) >= 0 &&
-				 ( ( x - edge_equation[1].X) * edge_equation[1].dy - ( y - edge_equation[1].Y)*edge_equation[1].dx ) >= 0 &&
-				 ( ( x - edge_equation[2].X) * edge_equation[2].dy - ( y - edge_equation[2].Y)*edge_equation[2].dx ) >= 0 ){
+	vec4* data[3] = { &vso[0].position(), &vso[1].position(), &vso[2].position() };
 
+	for (float y = 0; y < 600; ++y)
+	{
+		vs_output out[2];
+		lerp(data,y,color3,out);
+		for (float x = 0; x < 800; ++x)
+		{
+			if (((x - edge_equation[0].X) * edge_equation[0].dy - (y - edge_equation[0].Y)*edge_equation[0].dx) >= 0 &&
+				((x - edge_equation[1].X) * edge_equation[1].dy - (y - edge_equation[1].Y)*edge_equation[1].dx) >= 0 &&
+				((x - edge_equation[2].X) * edge_equation[2].dy - (y - edge_equation[2].Y)*edge_equation[2].dx) >= 0)
+			{
 				
+				float t = ( x - out[0].position().x() ) / ( out[1].position().x() - out[0].position().x() );
 
-				vec4* data[3] = { &vso[0].position()
-								 ,&vso[1].position()
-								 ,&vso[2].position()
-				};
+				color_rgba_32f color1 = color_rgba_32f(out[0].attribute(1)[0],out[0].attribute(1)[1],out[0].attribute(1)[2],out[0].attribute(1)[3]);
+				color_rgba_32f color2 = color_rgba_32f(out[1].attribute(1)[0],out[1].attribute(1)[1],out[1].attribute(1)[2],out[1].attribute(1)[3]);
+				color_rgba_32f color = color1 + (color2 - color1)*t;
 
-				color_rgba_32f color;
+				float depth1 = out[0].position().w();
+				float depth2 = out[1].position().w();
+				float depth = depth1 + (depth2 - depth1)* t;
 
-				vec2 p(x,y);
-				color = gen_interp_val(p,data,color3);
-				float depth = gen_interp_z_val(p,data);
 				frame_buffer_->render_sample(x,y,depth,color);
 			}
+
 		}
 	}
 }

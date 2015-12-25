@@ -15,6 +15,7 @@ struct color_rgba_32f
 };
 
 color_rgba_32f operator+( const color_rgba_32f& lhs, const color_rgba_32f& rhs);
+color_rgba_32f operator-( const color_rgba_32f& lhs, const color_rgba_32f& rhs);
 color_rgba_32f operator*(const color_rgba_32f& lhs, float rhs);
 
 END_NS_LOPHURA()

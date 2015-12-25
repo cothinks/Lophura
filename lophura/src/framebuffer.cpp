@@ -92,7 +92,7 @@ public:
 	}
 };
 
-framebuffer::framebuffer()
+framebuffer::framebuffer()// :early_z_enable_(false)
 {}
 
 framebuffer::~framebuffer()
@@ -130,12 +130,15 @@ void framebuffer::render_sample(size_t x, size_t y, float depth,color_rgba_32f c
 	float       old_depth;
 	uint32_t    old_stencil;
 
-	old_depth = depth_stencil_accessor<fmt_r32g32b32a32_unit>::read_depth(ds_data);
-	if (!old_depth) old_depth = depth + 1;
-	if( depth < old_depth )
+	if (early_z_enable())
 	{
-		depth_stencil_accessor<fmt_r32g32b32a32_unit>::write_depth(ds_data,depth);
-		color_target_->fill_texels(x, y, 1, 1, clr);
+		old_depth = depth_stencil_accessor<fmt_r32g32b32a32_unit>::read_depth(ds_data);
+		if (depth > old_depth)
+		{
+			depth_stencil_accessor<fmt_r32g32b32a32_unit>::write_depth(ds_data, depth);
+			color_target_->fill_texels(x, y, 1, 1, clr);
+			return;
+		}
 	}
 }
 

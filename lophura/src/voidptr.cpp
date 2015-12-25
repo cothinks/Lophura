@@ -25,6 +25,14 @@ BEGIN_NS_LOPHURA()
 			,lhs.a + rhs.a);
 	}
 
+	color_rgba_32f operator-(const color_rgba_32f& lhs, const color_rgba_32f& rhs)
+	{
+		return color_rgba_32f(lhs.r - rhs.r
+			, lhs.g - rhs.g
+			, lhs.b - rhs.b
+			, lhs.a - rhs.a);
+	}
+
 	color_rgba_32f operator*(const color_rgba_32f& lhs, float rhs)
 	{
 		return color_rgba_32f( lhs.r * rhs

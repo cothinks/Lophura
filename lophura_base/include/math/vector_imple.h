@@ -145,6 +145,18 @@ namespace lophura_base
 		}
 	};
 
+	template<typename param_type, int size>
+	bool operator == (vector<param_type, size> const& lhs, vector<param_type, size> const& rhs)
+	{
+		for (size_t i = 0; i < size; i++){
+			if (lhs.data_[i] != rhs.data_[i]){
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	template<typename param_type,int size>
 	vector<param_type,size> operator + (vector<param_type,size> const& lhs,vector<param_type,size> const& rhs)
 	{
