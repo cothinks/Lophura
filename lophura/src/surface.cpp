@@ -43,6 +43,22 @@ void surface::fill_texels(color_rgba_32f const& color)
 	fill_texels(0, 0, size_[0], size_[1], color);
 }
 
+void surface::fill_texels_ds(color_rgba_32f const& color)
+{
+	for (size_t x = 0; x < 0 + size_[0]; ++x)
+	{
+		for (size_t s = 0; s < sample_count_; ++s)
+		{
+			memcpy(&data_[((size_[0] * 0 + x) * sample_count_ + s) * elem_size_], &color, elem_size_);
+		}
+	}
+
+	for (size_t y = 0 + 1; y < 0 + size_[1]; ++y)
+	{
+		memcpy(&data_[(size_[0] * y + 0) * sample_count_ * elem_size_], &data_[(size_[0] * 0 + 0) * sample_count_ * elem_size_], sample_count_ * elem_size_ * size_[0]);
+	}
+}
+
 color_rgba_32f surface::get_texel(size_t x, size_t y, size_t sample) const
 {
 	color_rgba_32f color;

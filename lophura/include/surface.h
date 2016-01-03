@@ -54,6 +54,8 @@ public:
 
 	void fill_texels(size_t sx, size_t sy, size_t width, size_t height, const color_rgba_32f& color);
 	void fill_texels(color_rgba_32f const& color);
+
+	void fill_texels_ds(color_rgba_32f const& color);
 private:
 	size_t texel_offset(size_t x, size_t y, size_t sample) const;
 private:

@@ -43,6 +43,7 @@ public:
 	virtual void		set_primitive_topology(primitive_topology pt) = 0;
 
 	virtual void		clear_color(color_rgba_32f const& color) = 0;
+	virtual void		clear_depth_stencil(surface_ptr const& depth_stencil_target, uint32_t f,float d,uint32_t s) = 0;
 	virtual void		draw_index(size_t start_pos,size_t prim_count) = 0;
 };
 

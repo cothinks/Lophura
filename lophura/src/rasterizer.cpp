@@ -333,10 +333,155 @@ void lerp(vec4** vertex, float y, const color_rgba_32f* vertex_color, vs_output*
 	}
 }
 
+struct vertex
+{
+	vec4 pos;
+	color_rgba_32f color;
+};
+
+struct edge
+{
+	vertex v;
+	vertex v1;
+	vertex v2;
+};
+
+struct trapezoid
+{
+	float top,bottom;
+	edge left,right;
+};
+
+struct scanline{ vertex v, step; int x, y, w; };
+
+int trapezoid_init_triangle(trapezoid *trap, const vertex *p1, 
+							const vertex *p2, const vertex *p3)
+{
+	const vertex *p;
+	float k, x;
+
+	if (p1->pos.y() > p2->pos.y()) p = p1, p1 = p2, p2 = p;
+	if (p1->pos.y() > p3->pos.y()) p = p1, p1 = p3, p3 = p;
+	if (p2->pos.y() > p3->pos.y()) p = p2, p2 = p3, p3 = p;
+	if (p1->pos.y() == p2->pos.y() && p1->pos.y() == p3->pos.y()) return 0;
+	if (p1->pos.x() == p2->pos.x() && p1->pos.x() == p3->pos.x()) return 0;
+
+	if (p1->pos.y() == p2->pos.y()) {	// triangle down
+		if (p1->pos.x() > p2->pos.x()) p = p1, p1 = p2, p2 = p;
+		trap[0].top = p1->pos.y();
+		trap[0].bottom = p3->pos.y();
+		trap[0].left.v1 = *p1;
+		trap[0].left.v2 = *p3;
+		trap[0].right.v1 = *p2;
+		trap[0].right.v2 = *p3;
+		return (trap[0].top < trap[0].bottom)? 1 : 0;
+	}
+
+	if (p2->pos.y() == p3->pos.y()) {	// triangle up
+		if (p2->pos.x() > p3->pos.x()) p = p2, p2 = p3, p3 = p;
+		trap[0].top = p1->pos.y();
+		trap[0].bottom = p3->pos.y();
+		trap[0].left.v1 = *p1;
+		trap[0].left.v2 = *p2;
+		trap[0].right.v1 = *p1;
+		trap[0].right.v2 = *p3;
+		return (trap[0].top < trap[0].bottom)? 1 : 0;
+	}
+
+	trap[0].top = p1->pos.y();
+	trap[0].bottom = p2->pos.y();
+	trap[1].top = p2->pos.y();
+	trap[1].bottom = p3->pos.y();
+
+	k = (p3->pos.y() - p1->pos.y()) / (p2->pos.y() - p1->pos.y());
+	x = p1->pos.x() + (p2->pos.x() - p1->pos.x()) * k;
+
+	if (x <= p3->pos.x()) {		// triangle left
+		trap[0].left.v1 = *p1;
+		trap[0].left.v2 = *p2;
+		trap[0].right.v1 = *p1;
+		trap[0].right.v2 = *p3;
+		trap[1].left.v1 = *p2;
+		trap[1].left.v2 = *p3;
+		trap[1].right.v1 = *p1;
+		trap[1].right.v2 = *p3;
+	}	else {					// triangle right
+		trap[0].left.v1 = *p1;
+		trap[0].left.v2 = *p3;
+		trap[0].right.v1 = *p1;
+		trap[0].right.v2 = *p2;
+		trap[1].left.v1 = *p1;
+		trap[1].left.v2 = *p3;
+		trap[1].right.v1 = *p2;
+		trap[1].right.v2 = *p3;
+	}
+
+	return 2;
+}
+
+float interp(float x1, float x2, float t) { return x1 + (x2 - x1) * t; }
+void vector_interp(vec4 *z, const vec4 *x1, const vec4 *x2, float t) {
+	(*z)[0] = interp(x1->x(), x2->x(), t);
+	(*z)[1] = interp(x1->y(), x2->y(), t);
+	(*z)[2] = interp(x1->z(), x2->z(), t);
+	(*z)[3] = interp(x1->w(), x2->w(), t);
+}
+
+void vertex_interp(vertex *y, const vertex *x1, const vertex *x2, float t) {
+	vector_interp(&(y->pos), &(x1->pos), &(x2->pos), t);
+
+	y->color.r = interp(x1->color.r,x2->color.r,t);
+	y->color.g = interp(x1->color.g,x2->color.g,t);
+	y->color.b = interp(x1->color.b,x2->color.b,t);
+	y->color.a = interp(x1->color.a,x2->color.a,t);
+}
+void vertex_division(vertex *y, const vertex *x1, const vertex *x2, float w) {
+	float inv = 1.0f / w;
+	y->pos[0] = (x2->pos.x() - x1->pos.x()) * inv;
+	y->pos[1] = (x2->pos.y() - x1->pos.y()) * inv;
+	y->pos[2] = (x2->pos.z() - x1->pos.z()) * inv;
+	y->pos[3] = (x2->pos.w() - x1->pos.w()) * inv;
+
+	y->color.r = (x2->color.r - x1->color.r) * inv;
+	y->color.g = (x2->color.g - x1->color.g) * inv;
+	y->color.b = (x2->color.b - x1->color.b) * inv;
+	y->color.a = (x2->color.a - x1->color.a) * inv;
+}
+void trapezoid_init_scan_line(const trapezoid *trap, scanline *scanline, int y) {
+	float width = trap->right.v.pos.x() - trap->left.v.pos.x();
+	scanline->x = (int)(trap->left.v.pos.x() + 0.5f);
+	scanline->w = (int)(trap->right.v.pos.x() + 0.5f) - scanline->x;
+	scanline->y = y;
+	scanline->v = trap->left.v;
+	if (trap->left.v.pos.x() >= trap->right.v.pos.x()) scanline->w = 0;
+	vertex_division(&scanline->step, &trap->left.v, &trap->right.v, width);
+}
+
+void trapezoid_edge_interp(trapezoid *trap, float y)
+{
+	float s1 = trap->left.v2.pos.y() - trap->left.v1.pos.y();
+	float s2 = trap->right.v2.pos.y() - trap->right.v1.pos.y();
+	float t1 = (y - trap->left.v1.pos.y()) / s1;
+	float t2 = (y - trap->right.v1.pos.y()) / s2;
+	vertex_interp(&trap->left.v, &trap->left.v1, &trap->left.v2, t1);
+	vertex_interp(&trap->right.v, &trap->right.v1, &trap->right.v2, t2);
+}
+
+void vertex_add(vertex *y, const vertex *x) {
+	y->pos[0] += x->pos.x();
+	y->pos[1] += x->pos.y();
+	y->pos[2] += x->pos.z();
+	y->pos[3] += x->pos.w();
+
+	y->color.r += x->color.r;
+	y->color.g += x->color.g;
+	y->color.b += x->color.b;
+	y->color.a += x->color.a;
+}
+
 void rasterizer::rasterize_solid_triangle(rasterize_prim_context const* ctxt)
 {
 	vs_output*	vso = ctxt->vso_;
-	//color_rgba_32f color = ctxt->color_;
 	cpp_pixel_shader* ps = ctxt->shaders.cpp_ps;
 
 	vec4*	pos1 = &vso[0].position();
@@ -349,63 +494,70 @@ void rasterizer::rasterize_solid_triangle(rasterize_prim_context const* ctxt)
 	{
 		for (int i = 0;i < 3;++i)
 		{
-			vs_output& in = vso[i];
-			//in.position() = *data[i];
-
 			ps_output out;
-			ps->execute(in,out);
+			ps->execute(vso[i],out);
 			color3[i] = color_rgba_32f(out.color.x(),out.color.y(),out.color.z(),out.color.w());
 		}
 	}
 
-	//edge function E(x,y) = ( x - X )* dx - ( y - Y)*dy
-	struct equation_param{
-		float X,Y,dx,dy;
-	};
-	equation_param edge_equation[3];
+	vertex v1,v2,v3;
+	v1.pos = *pos1;v1.color = color3[0];
+	v2.pos = *pos2;v2.color = color3[1];
+	v3.pos = *pos3;v3.color = color3[2];
 
-	//1-2
-	edge_equation[0].X	= pos1->x();
-	edge_equation[0].Y	= pos1->y();
-	edge_equation[0].dx	= pos2->x() - pos1->x();
-	edge_equation[0].dy = pos2->y() - pos1->y();
-	//2-3
-	edge_equation[1].X	= pos2->x();
-	edge_equation[1].Y	= pos2->y();
-	edge_equation[1].dx	= pos3->x() - pos2->x();
-	edge_equation[1].dy = pos3->y() - pos2->y();
-	//3-1
-	edge_equation[2].X	= pos3->x();
-	edge_equation[2].Y	= pos3->y();
-	edge_equation[2].dx	= pos1->x() - pos3->x();
-	edge_equation[2].dy = pos1->y() - pos3->y();
+	trapezoid trap[2];
+	int n = trapezoid_init_triangle(trap,&v1,&v2,&v3);
 
-	vec4* data[3] = { &vso[0].position(), &vso[1].position(), &vso[2].position() };
-
-	for (float y = 0; y < 600; ++y)
+	if (n >= 1)
 	{
-		vs_output out[2];
-		lerp(data,y,color3,out);
-		for (float x = 0; x < 800; ++x)
-		{
-			if (((x - edge_equation[0].X) * edge_equation[0].dy - (y - edge_equation[0].Y)*edge_equation[0].dx) >= 0 &&
-				((x - edge_equation[1].X) * edge_equation[1].dy - (y - edge_equation[1].Y)*edge_equation[1].dx) >= 0 &&
-				((x - edge_equation[2].X) * edge_equation[2].dy - (y - edge_equation[2].Y)*edge_equation[2].dx) >= 0)
-			{
-				
-				float t = ( x - out[0].position().x() ) / ( out[1].position().x() - out[0].position().x() );
-
-				color_rgba_32f color1 = color_rgba_32f(out[0].attribute(1)[0],out[0].attribute(1)[1],out[0].attribute(1)[2],out[0].attribute(1)[3]);
-				color_rgba_32f color2 = color_rgba_32f(out[1].attribute(1)[0],out[1].attribute(1)[1],out[1].attribute(1)[2],out[1].attribute(1)[3]);
-				color_rgba_32f color = color1 + (color2 - color1)*t;
-
-				float depth1 = out[0].position().w();
-				float depth2 = out[1].position().w();
-				float depth = depth1 + (depth2 - depth1)* t;
-
-				frame_buffer_->render_sample(x,y,depth,color);
+		scanline sl;
+		int j, top, bottom;
+		top = (int)(trap[0].top + 0.5f);
+		bottom = (int)(trap[0].bottom + 0.5f);
+		for (j = top; j < bottom; j++) {
+			if (j >= 0 && j < 600) {
+				trapezoid_edge_interp(&(trap[0]), (float)j + 0.5f);
+				trapezoid_init_scan_line(&(trap[0]), &sl, j);
+				int x = sl.x;
+				int w = sl.w;
+				int width = 800;
+				for (; w > 0; x++, w--) {
+					if (x >= 0 && x < width) {
+						float depth = sl.v.pos.w();
+						color_rgba_32f color = sl.v.color;
+						frame_buffer_->render_sample(x,j,depth,color);
+					}
+				vertex_add(&(sl.v), &(sl.step));
+				if (x >= width) break;
+				}
 			}
-
+			if (j >= 600) break;
+		}
+	}
+	if (n >= 2)
+	{
+		scanline sl;
+		int j, top, bottom;
+		top = (int)(trap[1].top + 0.5f);
+		bottom = (int)(trap[1].bottom + 0.5f);
+		for (j = top; j < bottom; j++) {
+			if (j >= 0 && j < 600) {
+				trapezoid_edge_interp(&(trap[1]), (float)j + 0.5f);
+				trapezoid_init_scan_line(&(trap[1]), &sl, j);
+				int x = sl.x;
+				int w = sl.w;
+				int width = 800;
+				for (; w > 0; x++, w--) {
+					if (x >= 0 && x < width) {
+						float depth = sl.v.pos.w();
+						color_rgba_32f color = sl.v.color;
+						frame_buffer_->render_sample(x,j,depth,color);
+					}
+					vertex_add(&(sl.v), &(sl.step));
+					if (x >= width) break;
+				}
+			}
+			if (j >= 600) break;
 		}
 	}
 }

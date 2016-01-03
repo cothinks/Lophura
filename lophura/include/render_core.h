@@ -18,6 +18,7 @@ public:
 protected:
 	void execute();
 	void clear_color();
+	void clear_depth_stencil();
 	void draw();
 protected:
 	render_state_ptr	state_;

@@ -9,7 +9,6 @@
 #include "lophura/include/colors.h"
 #include "lophura/include/render_state/input_layout.h"
 #include "lophura/include/render_state/input_assembly_state.h"
-//#include "lophura/include/surface.h"
 
 #include "lophura_base/include/utility/shared_declaration.h"
 
@@ -44,6 +43,9 @@ struct render_state
 	size_t					start_index_;
 	size_t					primitive_count_;
 		
+	uint32_t				clear_f;
+	float					clear_z;
+	uint32_t				clear_stencil;
 	color_rgba_32f			clear_color_;
 };
 

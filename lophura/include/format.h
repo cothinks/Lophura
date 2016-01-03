@@ -16,4 +16,10 @@ enum color_format
 	fmt_r32g32b32a32_unit	= 1
 };
 
+enum clear_flag
+{
+	clear_depth = 0x1,
+	clear_stencil = 0x2
+};
+
 END_NS_LOPHURA()

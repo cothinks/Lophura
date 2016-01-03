@@ -30,10 +30,13 @@ void render_core::execute()
 	switch (state_->command_)
 	{
 	case command_id::clear_color:
-			clear_color();
+		clear_color();
 		break;
 	case command_id::draw_index:
-			draw();
+		draw();
+		break;
+	case command_id::clear_depth_stencil:
+		clear_depth_stencil();
 		break;
 	default:
 			assert( false && "unknown command !");
@@ -44,6 +47,20 @@ void render_core::execute()
 void render_core::clear_color()
 {
 	state_->color_target_->fill_texels(state_->clear_color_);
+}
+
+void render_core::clear_depth_stencil()
+{
+	if ( state_->clear_f == ( clear_depth | clear_stencil ))
+	{
+		auto ds_color = color_rgba_32f(
+			state_->clear_z, *reinterpret_cast<float*>(&state_->clear_stencil), 0.0f, 0.0f
+			);
+		state_->depth_stencil_target_->fill_texels_ds(ds_color);
+	}else
+	{
+		assert(false);
+	}
 }
 
 void render_core::draw()

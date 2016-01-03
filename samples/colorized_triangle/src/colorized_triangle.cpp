@@ -148,7 +148,7 @@ public:
 
 		lophura_create_render(render_,lophura::render_syn);
 		surface_ptr color_buffer	= swap_chain_->get_surface();
-		surface_ptr ds_buffer = render_->create_tex2d(800, 600, 1, fmt_r32g32b32a32_unit);// create_buffer(800 * 600 * 4);
+		ds_buffer = render_->create_tex2d(800, 600, 1, fmt_r32g32b32a32_unit);// create_buffer(800 * 600 * 4);
 
 		render_->set_render_target(color_buffer,ds_buffer);
 
@@ -200,6 +200,7 @@ public:
 		render_->set_cpp_pixel_shader(pps_);
 
 		render_->clear_color(color_rgba_32f(0.1f,0.1f,0.0f,1.0f));
+		render_->clear_depth_stencil(ds_buffer,clear_depth | clear_stencil,0.0f,0);
 
 		//vec3 camera(80.0f,80.0f,80.0f);
 		vec3 camera(cos(camera_angle) * 2.3f, 2.5f, sin(camera_angle) * 2.3f);
@@ -233,6 +234,8 @@ public:
 private:
 	render_ptr					render_;
 	swap_chain_ptr				swap_chain_;
+
+	surface_ptr					ds_buffer;
 
 	float						camera_angle;
 	mesh_ptr					box_;

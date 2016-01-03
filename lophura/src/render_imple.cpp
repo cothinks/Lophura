@@ -91,6 +91,16 @@ void render_imple::clear_color( color_rgba_32f const& color )
 	commit_command();
 }
 
+void render_imple::clear_depth_stencil(surface_ptr const& depth_stencil_target, uint32_t f,float d,uint32_t s)
+{
+	state_->clear_f = f;
+	state_->clear_z = d;
+	state_->clear_stencil = s;
+	state_->command_ = command_id::clear_depth_stencil;
+
+	commit_command();
+}
+
 void render_imple::commit_command()
 {
 	render_core_.process_render_request(state_);
